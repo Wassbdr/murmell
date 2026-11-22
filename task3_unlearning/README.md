@@ -6,10 +6,10 @@ everywhere else. No labels, no retain data, no gold model. Score = forget × ret
 × (per-image prediction match, KL at T = 2), each averaged over exact and altered images, and retain = relative accuracy
 × 1 / (1 + KL to the original) on a hidden control set. Below 70 % validation accuracy the score is 0.
 
-**Best public score: 0.4795** (submission 4112). Best model: `codex_marge_isolee.pt` (submission 4112), attached to the
+**Best public score: 0.4806** (submission 4235). Best model: `cnsu_a32_repair100.pt`, attached to the
 release [`task3-best-model`](https://github.com/Wassbdr/murmell/releases/tag/task3-best-model) (328 MB, float32 state dict that loads with
-`strict=True`; SHA-256 `616ab7cbf452ab6ab6cbd841cdb9e0563d79f00f994c57c0a6bc71d962f24b52`). The previous best,
-`kimi_conditional_soup50.pt` (0.4793), is attached too.
+`strict=True`; SHA-256 `57377ff2f5837b9c79ca3f7542aef847c6b28e1caa2022735d56a5d024c79217`). The two previous bests,
+`codex_marge_isolee.pt` (0.4795) and `kimi_conditional_soup50.pt` (0.4793), are attached too.
 
 ## The idea
 
@@ -28,6 +28,7 @@ image by image, then repairing everything else. On 500 forget images, our final 
 | 4. Retention repair | The control set is new images. On 5,800 images generated in the dataset's style our models drifted (same answer as the original only 65 % of the time). The student keeps the unlearned answer on forget images and their altered copies, and copies the original on generated images. No labels: the original is the teacher | +0.008, +0.013, +0.0135 on three models; 0.4728 | [retention_repair/](retention_repair/) |
 | 5. Soups and ensembles | Weight averages of repaired models from different runs, and distillation of the mean of several teachers with the same retention term | 0.4728 → 0.4793 | [soups/](soups/) |
 | 6. True-class margin | Head-only, closed-form correction (per-class ridge on penultimate features) that moves each image's true-class margin toward the target loss, on exact and altered views, while the wrong-class distribution barely moves (KL 0.0009) and retention on generated images is unchanged. Held-out on 750 forget images | 0.4793 → 0.4795 | [final_margin/](final_margin/) |
+| 7. Projected step + head repair | From the 0.4795 model: one distillation step on the last two blocks and the head, projected away from 32 retention directions (step 0.12), then a head-only repair that brings the loss mean and std back to the previous model's. Chosen on 500 development sources and frozen before any official result; on 500 confirmation sources the KL to both forget targets drops (paired 95 % intervals exclude zero) and retention stays level | 0.4795 → 0.4806 | [final_cnsu/](final_cnsu/) |
 
 ### Code map
 
@@ -36,11 +37,11 @@ image by image, then repairing everything else. On 500 forget images, our final 
 - [refit_loop/refit_gold_receipts.py](refit_loop/refit_gold_receipts.py): updates the target parameters from official score differences, with bounded local steps.
 - [refit_loop/train_public_proxy.py](refit_loop/train_public_proxy.py): distils the calibrated probability targets while fitting the gold loss moments; splits fit and validation by source image.
 - [refit_loop/refine_loss_moments.py](refit_loop/refine_loss_moments.py), [refit_loop/calibrate_losses.py](refit_loop/calibrate_losses.py), [refit_loop/cibles_coherentes.py](refit_loop/cibles_coherentes.py) (one distribution compatible with the KL and loss moments), [refit_loop/three_term_unlearning.py](refit_loop/three_term_unlearning.py) (training with matched original references).
-- [refit_loop/iterations_sur_recus.py](refit_loop/iterations_sur_recus.py) and [refit_loop/entrainer_apres_recu.sh](refit_loop/entrainer_apres_recu.sh): train a successor after each official result on the GPU and nominate validated weights.
 - [retention_repair/t3_gen.py](retention_repair/t3_gen.py): generates new images in the dataset's style with SDXL-Turbo (prompts per class concept).
 - [retention_repair/t3_retain.py](retention_repair/t3_retain.py): the repair. [retention_repair/t3_consist.py](retention_repair/t3_consist.py) holds `alter` (crops, flips, small rotations, colour, blur, noise). [retention_repair/t3_alt.py](retention_repair/t3_alt.py) measures behaviour on altered copies. [retention_repair/appliquer_reparation.py](retention_repair/appliquer_reparation.py) applies the repair as a weight delta in 10 seconds, without a GPU.
 - [soups/t3_ensemble_retain.py](soups/t3_ensemble_retain.py): distils the mean of several teacher distributions with retention on generated images. [soups/t3_conditional_distill.py](soups/t3_conditional_distill.py): the conditional variant behind the best model. [soups/soup.py](soups/soup.py): weight averaging (the best model is a 50/50 soup). [soups/kimi_opt_head.py](soups/kimi_opt_head.py): regularised head calibration, tested and not kept (it overfit our simulator).
 - [final_margin/marge_isolee_finale.py](final_margin/marge_isolee_finale.py): the final head-only margin correction on top of the previous best (anchor), split 2,200 / 550 / 750 forget images for fit, selection and confirmation.
+- [final_cnsu/cnsu_phase_a.py](final_cnsu/cnsu_phase_a.py): the projected distillation step (logit gradients, SGD projected on the null space of 32 retention directions, step shrunk on 128 confident controls). [final_cnsu/repair_moments_after.py](final_cnsu/repair_moments_after.py) and [final_cnsu/repair_doses.py](final_cnsu/repair_doses.py): the head repair of the loss moments and its dose selection. [final_cnsu/verification_holdout.py](final_cnsu/verification_holdout.py): the external check on 500 held-out sources.
 - [backtest/](backtest/): see below.
 
 ## Validation: why this is not tuned on the public 30 %

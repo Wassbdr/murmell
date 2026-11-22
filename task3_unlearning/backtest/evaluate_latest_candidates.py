@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate track 3 candidates against one frozen repaired champion on box1."""
+"""Evaluate track 3 candidates against one frozen repaired champion on our GPU."""
 
 import argparse
 import datetime as dt

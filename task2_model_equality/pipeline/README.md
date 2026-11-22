@@ -23,7 +23,7 @@ python me_pipeline.py --config CONFIG.json --answers A.jsonl [B.jsonl ...] --out
 - `--redecide`: reuse `OUTDIR/state.pkl` (measurements of a previous run) and only redo the decision, for example after `--set`.
 - `--set`    : threshold overrides, for example `--set gfp_self=5 gfp_pair=5 gfp_rows=long`.
 
-Needs a GPU, `torch`, `transformers`, `peft`, `numpy`. On the team boxes:
+Needs a GPU, `torch`, `transformers`, `peft`, `numpy`. On our GPU machines:
 `export HF_HOME=$HOME/hf; /opt/pytorch/bin/python me_pipeline.py ...`. GPU memory stays under 12 GB (checkpoints above 1.7 B
 parameters are scored in float16 and differentiated in bfloat16).
 
@@ -100,19 +100,19 @@ layer, fp8 with one scale per output channel, int8 per output channel; list in `
 ## Running on a brand new set of endpoints
 
 Budget: 59 answers per endpoint (16 plain short prompts, 8 identical requests, 35 reset-prefixed long prompts of 256 tokens).
-Only box1 talks to the challenge API (`../tests/plan_run.py`, which reads the key itself). The pipeline never calls any API.
+Only one machine talks to the challenge API (`../tests/plan_run.py`, which reads the key itself). The pipeline never calls any API.
 
 ```
 # 1. phase 1 plan: the 16 plain short prompts (extraction, identity, date, format, random draws, story), no knowledge needed
 python make_plan.py 1 plan1.jsonl ep-01 ep-02 ... ep-33
-python3 plan_run.py plan1.jsonl s0.jsonl 2                      (box1)
+python3 plan_run.py plan1.jsonl s0.jsonl 2
 
 # 2. families from the short answers alone (stage a only needs text): fast run without the fingerprint
 python me_pipeline.py --config config.json --answers s0.jsonl --out out1 --no-lora
 
 # 3. phase 2 plan: 8 identical requests of the random-digits prompt and 35 long prompts, behind the reset block of each family
 python make_plan.py 2 plan2.jsonl out1/diagnosis.json
-python3 plan_run.py plan2.jsonl long.jsonl 2                    (box1)
+python3 plan_run.py plan2.jsonl long.jsonl 2
 
 # 4. the whole pipeline on everything
 python me_pipeline.py --config config.json --answers s0.jsonl long.jsonl --out out2 --cache cache

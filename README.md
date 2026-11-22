@@ -6,7 +6,7 @@ Team Murmell, Meta Hackathon, European AI Championship, Paris, 21-22 November 20
 |---|---|---|
 | 1. Watermark localisation | [task1_watermark_localisation](task1_watermark_localisation/) | 0.8127 |
 | 2. Model equality | [task2_model_equality](task2_model_equality/) | 1.00 |
-| 3. Unlearning | [task3_unlearning](task3_unlearning/) | 0.4795 |
+| 3. Unlearning | [task3_unlearning](task3_unlearning/) | 0.4806 |
 
 Slides: [slides](slides/). Each task folder has a README with the method and links to the code.
 

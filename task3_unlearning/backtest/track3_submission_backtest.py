@@ -47,7 +47,7 @@ def load_public_history():
             records[int(data["id"])] = data
     likely_path = INPUTS / "likely_receipt_assignments.json"
     likely = json.loads(likely_path.read_text()) if likely_path.is_file() else {}
-    sendloop = INPUTS / "box1-sendloop.log"
+    sendloop = INPUTS / "sendloop.log"
     if sendloop.is_file():
         for line in sendloop.read_text().splitlines():
             try:
@@ -61,7 +61,7 @@ def load_public_history():
             model = assignment.get("model")
             records[receipt_id] = {
                 "id": receipt_id,
-                "name": Path(model).stem if model else "box1_submission_model_to_confirm",
+                "name": Path(model).stem if model else "gpu_submission_model_to_confirm",
                 "model": model,
                 "parent_model": None,
                 "public_score": float(data["score"]),
@@ -105,7 +105,7 @@ def load_inventory(path):
 
 
 def load_candidate_evaluation():
-    paths = sorted(INPUTS.glob("box1/out/*/track3_backtest_*.json"))
+    paths = sorted(INPUTS.glob("gpu/out/*/track3_backtest_*.json"))
     reports = []
     for path in paths:
         try:
@@ -129,7 +129,7 @@ def load_candidate_evaluation():
 
 
 def load_l40s_reports():
-    path = ROOT / "updates/l40s-candidate-reports.jsonl"
+    path = ROOT / "updates/gpu-candidate-reports.jsonl"
     rows = []
     if not path.is_file():
         return rows
@@ -184,7 +184,7 @@ def main():
         receipt = by_model.get(row["name"])
         row["public_score"] = receipt["public_score"] if receipt else None
         row["receipt_id"] = receipt["id"] if receipt else None
-        row["evaluated_on_box1"] = bool(evaluation and row["name"] in evaluation["candidates"])
+        row["evaluated_on_gpu"] = bool(evaluation and row["name"] in evaluation["candidates"])
 
     best = max(history, key=lambda row: row["public_score"])
     latest = max(history, key=lambda row: row["id"])
@@ -220,7 +220,7 @@ def main():
             "public_receipts": len(history),
             "full_checkpoint_artifacts": len(artifacts),
             "checkpoints_with_public_receipt": sum(row["receipt_id"] is not None for row in artifacts),
-            "checkpoints_evaluated_on_box1": sum(row["evaluated_on_box1"] for row in artifacts),
+            "checkpoints_evaluated_on_gpu": sum(row["evaluated_on_gpu"] for row in artifacts),
             "l40s_candidate_reports": len(l40s_reports),
         },
         "current_public_record": current,
@@ -233,13 +233,13 @@ def main():
             "warning": "The D series is already repaired according to NOTE-REPARATION-INSTANTANEE.md; do not reapply blindly",
         },
         "recorded_public_forecast_backtest": forecast,
-        "box1_common_baseline_evaluation": evaluation,
+        "gpu_common_baseline_evaluation": evaluation,
         "l40s_candidate_reports": l40s_reports,
         "latest_checkpoint_artifacts": artifacts[:40],
         "public_history": history,
         "limitations": [
             "Public scores are official; local retention and forget metrics are diagnostics, not official scores",
-            "The box1 comparison uses a frozen repaired baseline and one held-out generated set",
+            "The GPU comparison uses a frozen repaired baseline and one held-out generated set",
             "A pushed checkpoint without a receipt or common-baseline evaluation is marked unmeasured, not scored by name",
             "New official submissions whose logs omit the model name remain explicitly unassigned",
         ],
@@ -251,7 +251,7 @@ def main():
     markdown_path = args.output.with_suffix(".md")
     markdown_path.write_text(markdown(report))
     print("Public receipts", len(history), "record", best["public_score"], best["name"])
-    print("Checkpoint artifacts", len(artifacts), "box1 evaluations", evaluation and len(evaluation["candidates"]))
+    print("Checkpoint artifacts", len(artifacts), "GPU evaluations", evaluation and len(evaluation["candidates"]))
     print("Report", args.output)
     print("Summary", markdown_path)
 
@@ -278,11 +278,11 @@ def markdown(report):
         lines.append(f"| {row['parent']} | {row['parent_public']:.4f} | {row['repaired_public']:.4f} | "
                      f"{row['gain']:+.4f} | {row['repaired_receipt']} |")
     lines.extend(["", f"Gain moyen: {repair['mean_gain']:+.6f}. {repair['warning']}", ""])
-    evaluation = report["box1_common_baseline_evaluation"]
+    evaluation = report["gpu_common_baseline_evaluation"]
     if evaluation:
         baseline = evaluation["baseline"]
         lines.extend([
-            "## Evaluation commune sur box1",
+            "## Evaluation commune sur GPU",
             "",
             f"Reference: {baseline['name']}, SHA256 `{baseline['sha256']}`.",
             "",
@@ -302,12 +302,12 @@ def markdown(report):
     lines.extend([
         "## Derniers checkpoints pousses",
         "",
-        "| Modele | Date UTC | Public | Evalue box1 |",
+        "| Modele | Date UTC | Public | Evalue GPU |",
         "|---|---|---:|---:|",
     ])
     for row in report["latest_checkpoint_artifacts"][:20]:
         public = f"{row['public_score']:.4f}" if row["public_score"] is not None else "non soumis"
-        lines.append(f"| {row['name']} | {row['last_modified']} | {public} | {row['evaluated_on_box1']} |")
+        lines.append(f"| {row['name']} | {row['last_modified']} | {public} | {row['evaluated_on_gpu']} |")
     lines.extend([
         "",
         "Les checkpoints sans recu ni evaluation commune restent marques comme non mesures. Aucun score ne leur est attribue a partir de leur nom.",

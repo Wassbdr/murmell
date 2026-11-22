@@ -154,7 +154,7 @@ VAE grid (AUC 0.50); TruFor as a zero-shot edit detector (AUC 0.45–0.50 on res
   shapes they had seen. Their CV is invalid and they were removed as references. They were sent, so the server still counts them.
 - **Public leaderboard.** Models and thresholds come from CV. The public score was watched as an alarm, and at 08:11 it was
   cited when B11 replaced B10 as the reference although the CV gain was below our rule; this was reverted at 08:51.
-- **External models and compute.** ImageNet encoders, the official decoders, SAM ViT-H (image only); AWS GPUs besides
+- **External models and compute.** ImageNet encoders, the official decoders, SAM ViT-H (image only); our own GPUs besides
   JURECA. SAM was cleared inside the team. We have seen no written organiser rule on external models, and no written
   confirmation on external compute.
 
@@ -170,4 +170,4 @@ B28: `src/final_stage/chains2.py --step build`, then `snap_stage.py` on each cha
 [`submission/B28_spec.json`](submission/B28_spec.json).
 `python -m src.night --name <NAME>` rebuilds a loop candidate from the finished runs (`work/runs`), the box files
 (`work/boxes`) and the SAM segments (`work/sam`); the exact command of each sent file is in `work/archive/<NAME>/spec.json`.
-Compute: two JURECA nodes (4 A100 each) and up to 8 AWS GPUs overnight; one model is 8 to 30 GPU-minutes.
+Compute: two JURECA nodes (4 A100 each) and up to 8 of our own GPUs overnight; one model is 8 to 30 GPU-minutes.
