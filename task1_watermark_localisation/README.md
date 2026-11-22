@@ -3,9 +3,9 @@
 Each test image carries a PixelSeal, TrustMark or StegaStamp watermark over part of the frame. We predict a 128×128 mask
 of the watermarked cells. The method and the embedded message are given for every image.
 
-Submission: [submission/B22_final.pt](submission/B22_final.pt). Nested 5-fold CV 0.8275 on the 510 training images,
-public leaderboard 0.8123. The CV is optimistic: the final list of chains was shortened after seeing their scores, and
-the public score separated B22 from a chain the CV rated equal. We expect about 0.81 on the hidden split.
+Submission: [submission/B28_final.pt](submission/B28_final.pt). Nested 5-fold CV 0.8285 on the 510 training images,
+public leaderboard 0.8127. The CV is optimistic: the final list of chains was shortened after seeing their scores. We
+expect about 0.81 on the hidden split.
 
 ## Method
 
@@ -22,6 +22,8 @@ the public score separated B22 from a chain the CV rated equal. We expect about 
 6. **Boxes.** In the small regime, a crop that decodes at least 80 % of the message bits becomes the mask.
 7. **SAM.** A pasted object carries only a fragment of the watermark and does not decode. We snap the mask to the
    Segment Anything segment that overlaps it best, when they agree. CV 0.803 to 0.819 for this step alone.
+   We also train on synthetic pasted objects whose outline is a SAM segment of a real image (`rescale_ft.py --sam_items`):
+   TrustMark small images go from 0.847 to 0.855.
 8. **Final blend.** Per method and regime, the mask comes from one of a few complete chains, chosen in inner folds. For
    PixelSeal full images, the mean of 27 models beats any selected pair (0.790 against 0.777).
 

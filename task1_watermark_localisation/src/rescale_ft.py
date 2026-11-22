@@ -180,9 +180,9 @@ class SamObjMix(Dataset):
     one visible object (SAM snapping as a post-process gains +0.06 to +0.13 on such images); here the segmenter itself
     learns that the watermark boundary follows the object contour."""
 
-    def __init__(self, inner, method, n, seed, p):
+    def __init__(self, inner, method, n, seed, p, p_hole=0.0):
         from src.data import names
-        self.inner, self.p, self.seed = inner, p, seed
+        self.inner, self.p, self.seed = inner, p, seed; self.p_hole = p_hole     # p_hole: share of SAM items that are HOLES (full regime: clean object in a watermarked frame)
         self.t3 = tf.SynthSmall3(method, n, seed, 1.0, 0.5)
         self.ix = {sp: {nm: i for i, nm in enumerate(names(sp))} for sp in ("train", "test")}; self.seg = {}
         for sp in ("train", "test"):
@@ -215,6 +215,11 @@ class SamObjMix(Dataset):
         if M is None or M.sum() < 64:
             return self.inner[i]
         b = t3._base(sp[k], nm[k]); yk = np.asarray(Y[k])
+        if rng.rand() < self.p_hole:                       # object-shaped hole(s): the gallery of train masks shows vases, cones, suitcases
+            if rng.rand() < 0.3:
+                M2 = self._seg(rng, sp[k], nm[k]); M = M | M2 if M2 is not None else M
+            y = np.where(M[..., None], b, yk)
+            return torch.from_numpy(np.ascontiguousarray(y)).permute(2, 0, 1), torch.from_numpy((~M).astype(np.float32))[None]
         if rng.rand() < 0.5:
             y = np.where(M[..., None], yk, b)
         else:
@@ -284,6 +289,7 @@ def main():
     ap.add_argument("--p_feather", type=float, default=0.0); ap.add_argument("--feather_max", type=float, default=5.0)
     ap.add_argument("--obj_items", type=float, default=0.0)     # full-regime bases: share of in-place transplanted-object items
     ap.add_argument("--tiny_holes", type=float, default=0.0)    # full bases: share of items with 1-3 holes of total area 0.2-3 %
+    ap.add_argument("--sam_holes", type=float, default=0.0)     # full bases: share of items whose hole is a SAM segment of the image
     ap.add_argument("--sam_items", type=float, default=0.0)     # any base: share of transplanted-object items with a SAM-segment silhouette
     ap.add_argument("--p_down", type=float, default=0.0); ap.add_argument("--p_blur", type=float, default=0.0); ap.add_argument("--blur_max", type=float, default=0.6)
     ap.add_argument("--p_jpeg", type=float, default=0.0); ap.add_argument("--jpeg_min", type=int, default=90)
@@ -296,7 +302,7 @@ def main():
     out = Path(a.out_root) / a.exp; out.mkdir(parents=True, exist_ok=True)
     LP.update(p_down=a.p_down, p_blur=a.p_blur, blur_max=a.blur_max, p_jpeg=a.p_jpeg, jpeg_min=a.jpeg_min)
     args = dict(b, exp=a.exp, base=a.base, kind_ft="rescale_ft", lowpass=dict(LP), ft_steps=a.steps, ft_lr=a.lr, p_rescale=a.p_rescale, thin=a.thin,
-                p_feather=a.p_feather, feather_max=a.feather_max, obj_items=a.obj_items, sam_items=a.sam_items, tiny_holes=a.tiny_holes,
+                p_feather=a.p_feather, feather_max=a.feather_max, obj_items=a.obj_items, sam_items=a.sam_items, sam_holes=a.sam_holes, tiny_holes=a.tiny_holes,
                 ft_seed=a.seed, base_args=b)         # method / regime / exclude_fold / shape_lib inherited => same cell restriction
     (out / "args.json").write_text(json.dumps(args))
     me, rg, G = methods(), regime(), masks128()
@@ -335,6 +341,8 @@ def main():
         inner = ObjMix(inner, method, a.steps * a.bs, 1000 + a.seed, a.obj_items)
     if a.sam_items > 0:
         inner = SamObjMix(inner, method, a.steps * a.bs, 1000 + a.seed, a.sam_items)
+    if a.sam_holes > 0:
+        assert reg == 'full'; inner = SamObjMix(inner, method, a.steps * a.bs, 2000 + a.seed, a.sam_holes, p_hole=1.0)
     ds = Rescaled(inner, a.p_rescale, a.seed, extra)
     dl = DataLoader(ds, batch_size=a.bs, num_workers=a.workers, shuffle=False, drop_last=True, persistent_workers=True, prefetch_factor=4)
     opt = torch.optim.AdamW(net.parameters(), lr=a.lr, weight_decay=1e-4)

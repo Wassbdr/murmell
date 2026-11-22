@@ -37,6 +37,32 @@ if os.environ.get("SAMENS", "") == "RS":      # Sun 09:40: the same chain on the
                                        "trustmark": ["RS_DT2_tm_tta", "RS_R_DT2_tm_tta", "RS_DT5_tm_tta", "RS_D2_tm_xfall_tta"],
                                        "stegastamp": ["RS_R_S1_ss_tta", "RS_S5_ss_tta", "RS_R_F3_ss_xfall_tta"]}, indent=1))
 
+if os.environ.get("SAMENS", "") == "RS2":     # Sun 10:55: RS + second series RS1 (seed 1, 4000 steps) of the fold-clean pieces
+    ENS = {"pixelseal": "DS6_ps_ens", "trustmark": "DS6_tm_ens", "stegastamp": "S6_ss_ens"}
+    BASES = {"pixelseal": ["RS_D5_ps_noamp_xfall_tta", "RS1_D5_ps_noamp_xfall_tta", "RS_R_DT2_ps_amp4_tta"],
+             "trustmark": ["RS_D2_tm_xfall_tta", "RS1_D2_tm_xfall_tta", "RS_R_DT2_tm_tta"],
+             "stegastamp": ["RS_R_F3_ss_xfall_tta", "RS1_R_F3_ss_xfall_tta", "RS_S5_ss_tta"]}
+    MEMBERS = ROOT / "work/sam/ens_members_RS2.json"
+    _done = lambda r: (ROOT / "work/runs" / r / "test.npy").exists() and (ROOT / "work/runs" / r / "test.npy").stat().st_size > 0 and (ROOT / "work/runs" / r / "args.json").stat().st_size > 0
+    BASES = {m: [r for r in v if _done(r)] for m, v in BASES.items()}          # a series still training at build time is left out
+    if not MEMBERS.exists():
+        _mem = {"pixelseal": ["RS_DT5_ps_amp4_tta", "RS_DT5_ps_amp4_s1_tta", "RS_R_DT2_ps_amp4_tta", "RS_D5_ps_noamp_xfall_tta", "RS1_D5_ps_noamp_xfall_tta"],
+                "trustmark": ["RS_DT2_tm_tta", "RS_R_DT2_tm_tta", "RS_DT5_tm_tta", "RS_D2_tm_xfall_tta", "RS1_D2_tm_xfall_tta"],
+                "stegastamp": ["RS_R_S1_ss_tta", "RS_S5_ss_tta", "RS_R_F3_ss_xfall_tta", "RS1_R_F3_ss_xfall_tta"]}
+        MEMBERS.write_text(json.dumps({m: [r for r in v if _done(r)] for m, v in _mem.items()}, indent=1))
+
+if os.environ.get("SAMENS", "") == "RS3":     # Sun 11:20: RS + RS1 + RS3 (third series, seed 2) for TrustMark and StegaStamp
+    ENS = {"pixelseal": "DS5_ps_ens", "trustmark": "DS5_tm_ens", "stegastamp": "S5e_ss_ens"}
+    _done = lambda r: (ROOT / "work/runs" / r / "test.npy").exists() and (ROOT / "work/runs" / r / "test.npy").stat().st_size > 0 and (ROOT / "work/runs" / r / "args.json").stat().st_size > 0
+    BASES = {"pixelseal": ["RS_D5_ps_noamp_xfall_tta"], "trustmark": ["RS1_D2_tm_xfall_tta", "RS3_D2_tm_xfall_tta"], "stegastamp": ["RS1_R_F3_ss_xfall_tta", "RS3_R_F3_ss_xfall_tta"]}
+    BASES = {m: [r for r in v if _done(r)] for m, v in BASES.items()}
+    MEMBERS = ROOT / "work/sam/ens_members_RS3.json"
+    if not MEMBERS.exists():
+        _mem = {"pixelseal": ["RS_DT5_ps_amp4_tta", "RS_DT5_ps_amp4_s1_tta", "RS_R_DT2_ps_amp4_tta", "RS_D5_ps_noamp_xfall_tta"],
+                "trustmark": ["RS_DT2_tm_tta", "RS_R_DT2_tm_tta", "RS_DT5_tm_tta", "RS_D2_tm_xfall_tta", "RS1_D2_tm_xfall_tta", "RS3_D2_tm_xfall_tta"],
+                "stegastamp": ["RS_R_S1_ss_tta", "RS_S5_ss_tta", "RS_R_F3_ss_xfall_tta", "RS1_R_F3_ss_xfall_tta", "RS3_R_F3_ss_xfall_tta"]}
+        MEMBERS.write_text(json.dumps({m: [r for r in v if _done(r)] for m, v in _mem.items()}, indent=1))
+
 
 def members():
     if MEMBERS.exists() and MEMBERS.stat().st_size:

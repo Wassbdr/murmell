@@ -23,12 +23,12 @@ Yes, to a useful degree, and how well depends on the carrier and on the scale of
 | PixelSeal, full frame with holes | 90 | 0.790 | 0.75 |
 | PixelSeal, small region | 80 | 0.784 | 0.75 |
 | TrustMark, full frame with holes | 88 | 0.753 | 0.78 |
-| TrustMark, small region | 82 | 0.847 | 0.80 |
+| TrustMark, small region | 82 | 0.855 | 0.80 |
 | StegaStamp, full frame with holes | 87 | 0.911 | 0.90 |
-| StegaStamp, small region | 83 | 0.881 | 0.82 |
-| **all** | 510 | **0.8275** (candidate B22) | 0.83 (not reached) |
+| StegaStamp, small region | 83 | 0.879 | 0.82 |
+| **all** | 510 | **0.8285** (candidate B28) | 0.83 (not reached) |
 
-Reference: B22, nested 0.8275, public 0.8123 (ID 4028, sent 10:37:56). Before the object-contour step: S11, nested 0.8026,
+Reference: B28, nested 0.8285, public 0.8127 (ID 4137, sent 11:18:00). Before the object-contour step: S11, nested 0.8026,
 public 0.7957 (ID 3236). Our honest expectation on the hidden test is about 0.81.
 
 ## 3. Method
@@ -59,8 +59,9 @@ public 0.7957 (ID 3236). Our honest expectation on the hidden test is about 0.81
    (0.790 against 0.777, chosen in the five folds). It does not help TrustMark or StegaStamp, nor the small-region cells.
 8. **Segmenters trained with object-shaped items.** Late addition: synthetic transplanted objects whose silhouette is a SAM
    segment of a real image (label-free). Raw maps on real small objects improve, the nested score of the full chain does
-   not (0.847 against 0.847 on TrustMark small), but the candidate built on these models scores higher on the public board
-   (0.8123 against 0.8080), within noise.
+   not at first (0.847 against 0.847 on TrustMark small); with a second series of such models it does (TrustMark small 0.855,
+   StegaStamp small 0.879). The five candidates built on these models score 0.8118 to 0.8131 on the public board, the six
+   earlier ones 0.8055 to 0.8098.
 9. **Fully nested selection.** For each (method, regime) cell, the models, their pairs, the post-processing and the
    threshold are chosen on four folds and scored on the fifth; a rule forbids a model to be used on images whose mask
    shapes it has seen. A per-image mask selector (LightGBM on label-free statistics) added 0.003 to 0.006 before SAM.
@@ -84,6 +85,8 @@ public 0.7957 (ID 3236). Our honest expectation on the hidden test is about 0.81
 | B11, a fourth chain (+0.0011 over B10: within noise, not counted) | 0.8250 | 0.8088 |
 | + PixelSeal full = mean of 27 models; StegaStamp full from the pair without selector (B21; +0.0037 over B10, 5/5 folds) | 0.8275 | 0.8080 |
 | + TrustMark and StegaStamp small from the chain built on the object-trained models (B22; equal in CV) | 0.8275 | 0.8123 |
+| + second series of object-trained models in that chain (B28; TrustMark small chosen in 5/5 folds) | 0.8285 | 0.8127 |
+| same with the full cells from the selector on the last pool (B29; best public of the team) | 0.8291 | 0.8132 |
 
 Figures (in `~/wmloc_report/figures/`): `fig1_timeline.png` nested CV and public score of every submission;
 `fig2_gap.png` the synthetic-to-real gap and its closing; `fig3_examples.png` median image of each cell (candidate T01);
@@ -98,7 +101,7 @@ Thresholds and model choices are nested, but the result is still optimistic, by 
   kept after reading validation scores on the same 510 images; 20 selector configurations were looked at.
 - The gap nested − public grew with the amount of selection: +0.001 for the first submissions, +0.004 at midnight,
   +0.007 for S11, +0.0161 for B10. From S10 to S11 the nested CV rose by 0.0067 and the public score by 0.0004.
-- An independent audit of S11 found no rule leak (no near-duplicate images across folds or with the test set, no side
+- An audit of S11 found no rule leak (no near-duplicate images across folds or with the test set, no side
   channel in files or metadata) and puts its honest value at about 0.796 (range 0.792–0.799); the public score is 0.7957.
 - The SAM stage adds its own optimism. Variants looked at: for T01, 8 map variants, prompted masks, 3 rules offered to the
   nested selection and a ranker (a second ranker followed); for B10, 3 successive versions of the snap rule, 324 settings
@@ -107,8 +110,9 @@ Thresholds and model choices are nested, but the result is still optimistic, by 
   fixed on all 510 images; choosing it in inner folds lowered B10 from 0.8243 to 0.8239 (corrected here, same test file). In B10, TrustMark's
   chain changes in fold 4 and the gain over T02 is negative there (-0.0084). From S11 to B10 the nested CV rose by 0.021 and
   the public score by 0.012: about half. We expect about 0.81 on the hidden part rather than 0.8239.
-- After 09:15 we sent one candidate per submission slot (13 files by 10:50), all between 0.8055 and 0.8123 on the public
-  board, for nested values between 0.8173 and 0.8277: on 306 public images, differences of 0.003 between our own candidates
+- After 09:15 we sent one candidate per submission slot (18 files by 11:50), all between 0.8055 and 0.8132 on the public
+  board, for nested values between 0.8173 and 0.8291. The organisers rank each team on its best private score over all
+  its submissions, so these files are deliberate, different draws of the same pipeline: on 306 public images, differences of 0.003 between our own candidates
   are noise. One choice used the public score: B22 keeps the object-trained chain for TrustMark and StegaStamp small,
   which the CV rated equal to the previous chain. In B21 and B22 the list of chains was shortened, and TrustMark full fixed,
   after a first table where two equal chains flipped between folds (free choice: 0.8228).
@@ -121,7 +125,7 @@ Relative thresholds; re-embedding and correlating (PixelSeal); TrustMark's own r
 occlusion maps; an edited-zone detector trained on the real masks (AUC 0.49 on missed holes); a 128×128 stacker; top-n
 means; lower box thresholds; low-pass and resize-inverse tricks; self-training on test images (not used, by decision);
 a "never empty" hole fallback; prompted SAM with a fixed rule; SAM on full-regime holes (holes do not follow objects);
-a finer rectangle search by message agreement; a fine-tune specialised on tiny holes; a 64-shift test-time averaging (worse
+a finer rectangle search by message agreement; a fine-tune specialised on tiny holes; full-regime holes shaped like objects; ellipse fitting of the holes; a 64-shift test-time averaging (worse
 than 9 shifts); majority votes between chains; plain ensemble maps for the small cells; a forensic cue from the generator's
 VAE grid (AUC 0.50); TruFor as a zero-shot edit detector (AUC 0.45–0.50 on restored holes); a differential probe with the embedder
 (PixelSeal small regions, -0.001).
@@ -132,7 +136,9 @@ VAE grid (AUC 0.50); TruFor as a zero-shot edit detector (AUC 0.45–0.50 on res
   see almost nothing (28 train images at 0.50–0.57).
 - Tiny holes in a fully watermarked frame (less than 3 % of the area): missing one costs half of the image's score;
   75 train images average 0.72.
-- TrustMark, full regime (0.754) stays below our target.
+- TrustMark, full regime (0.753) stays below our target.
+- StegaStamp is the only method whose segmenter does not start from the official decoder (provided as ONNX only). Converting
+  it and training a decoder-initialised model is the first thing we would do next.
 - Why we plateau: train and test have the same mix of image types (chi-square p = 0.56), so there is no shift to correct.
   The loss sits in images whose minority region is under 3 % of the frame, and there the evidence map is the limit, not the
   decision: with the best threshold per image (an oracle), PixelSeal and TrustMark tiny-hole images reach only 0.70–0.73
@@ -160,8 +166,8 @@ VAE grid (AUC 0.50); TruFor as a zero-shot edit detector (AUC 0.45–0.50 on res
 
 ## 10. Reproduce
 
-B22: `src/final_stage/chains2.py --step build`, then `snap_stage.py` on each chain, then `chains2.py --step blend`; see
-[`submission/B22_spec.json`](submission/B22_spec.json).
+B28: `src/final_stage/chains2.py --step build`, then `snap_stage.py` on each chain, then `chains2.py --step blend`; see
+[`submission/B28_spec.json`](submission/B28_spec.json).
 `python -m src.night --name <NAME>` rebuilds a loop candidate from the finished runs (`work/runs`), the box files
 (`work/boxes`) and the SAM segments (`work/sam`); the exact command of each sent file is in `work/archive/<NAME>/spec.json`.
 Compute: two JURECA nodes (4 A100 each) and up to 8 AWS GPUs overnight; one model is 8 to 30 GPU-minutes.
