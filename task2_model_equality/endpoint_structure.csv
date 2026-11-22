@@ -1,0 +1,34 @@
+endpoint,family,base_model,role,confidence,note
+ep-01,QA,Qwen2.5-3B-Instruct,"one of 01, 12, 17, 25 is the plain base model, the others weak LoRA doses",open,"unresolved: 25 cleanest, 01 clean, 17 small offset, 12 clean"
+ep-02,QA,Qwen2.5-3B-Instruct,"base model, custom system prompt",sure,
+ep-03,QB,Qwen2.5-1.5B-Instruct,"LoRA, dose 1.0 (different model)",sure,
+ep-04,QA,Qwen2.5-3B-Instruct,"base model, watermark",sure,
+ep-05,LL,Llama-3.2-1B-Instruct,"LoRA, dose 1.5 (different model)",sure,
+ep-06,QB,Qwen2.5-1.5B-Instruct,"base model, watermark",sure,
+ep-07,QB,Qwen2.5-1.5B-Instruct,"base model, T 0.9 + top_k 50",sure,
+ep-08,QB,Qwen2.5-1.5B-Instruct,"base model, custom system prompt",sure,
+ep-09,LL,Llama-3.2-1B-Instruct,"LoRA, dose 0.5 (different model)",sure,
+ep-10,LL,Llama-3.2-1B-Instruct,"base model, watermark",sure,
+ep-11,LL,Llama-3.2-1B-Instruct,"LoRA, dose 1.0 (different model)",sure,
+ep-12,QA,Qwen2.5-3B-Instruct,"one of 01, 12, 17, 25 is the plain base model, the others weak LoRA doses",open,"unresolved: 25 cleanest, 01 clean, 17 small offset, 12 clean"
+ep-13,LL,Llama-3.2-1B-Instruct,"base model, plain",sure,
+ep-14,QA,Qwen2.5-3B-Instruct,"probably a weak LoRA dose, or base model with T 0.9 + top_k 50",open,"its fingerprint leans to the LoRA direction (slope 0.24, p 0.011); simulated bench says LoRA about 9 times out of 10"
+ep-15,LL,Llama-3.2-1B-Instruct,fp8 quantised (different model),sure,
+ep-16,LL,Llama-3.2-1B-Instruct,"base model, persona prompt",sure,
+ep-17,QA,Qwen2.5-3B-Instruct,"one of 01, 12, 17, 25 is the plain base model, the others weak LoRA doses",open,"unresolved: 25 cleanest, 01 clean, 17 small offset, 12 clean"
+ep-18,QA,Qwen2.5-3B-Instruct,"LoRA, dose moyenne (different model)",sure,
+ep-19,LL,Llama-3.2-1B-Instruct,"LoRA, dose 0.3 (different model)",sure,
+ep-20,QB,Qwen2.5-1.5B-Instruct,"base model, persona prompt",sure,
+ep-21,QB,Qwen2.5-1.5B-Instruct,"LoRA, dose 0.5 (different model)",sure,
+ep-22,QB,Qwen2.5-1.5B-Instruct,fp8 quantised (different model),sure,
+ep-23,QA,Qwen2.5-3B-Instruct,"base model, persona prompt",sure,
+ep-24,QA,Qwen2.5-3B-Instruct,"LoRA, dose forte (different model)",sure,
+ep-25,QA,Qwen2.5-3B-Instruct,"one of 01, 12, 17, 25 is the plain base model, the others weak LoRA doses",open,"unresolved: 25 cleanest, 01 clean, 17 small offset, 12 clean"
+ep-26,QB,Qwen2.5-1.5B-Instruct,"LoRA, dose 0.3 (different model)",sure,
+ep-27,LL,Llama-3.2-1B-Instruct,"base model, T 0.9 + top_k 50",sure,
+ep-28,QB,Qwen2.5-1.5B-Instruct,"LoRA, dose 1.5 (different model)",sure,
+ep-29,LL,Llama-3.2-1B-Instruct,"base model, custom system prompt",sure,
+ep-30,QB,Qwen2.5-1.5B-Instruct,"base model, temperature 1.0",sure,
+ep-31,LL,Llama-3.2-1B-Instruct,"base model, temperature 1.0",sure,
+ep-32,QB,Qwen2.5-1.5B-Instruct,"base model, plain",sure,
+ep-33,QA,Qwen2.5-3B-Instruct,"base model, temperature 1.0",sure,

@@ -1,0 +1,10 @@
+{
+  "name": "practice endpoints ref-01..09",
+  "candidates": [
+    "HuggingFaceTB/SmolLM2-360M-Instruct",
+    "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "Qwen/Qwen2.5-1.5B-Instruct"
+  ],
+  "reset_markers": ["<|im_start|>system", "<|start_header_id|>system"],
+  "probe_prefixes": ["per-"]
+}

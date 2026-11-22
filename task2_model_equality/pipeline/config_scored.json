@@ -1,0 +1,11 @@
+{
+  "name": "scored endpoints",
+  "candidates": [
+    "Qwen/Qwen2.5-3B-Instruct",
+    "Qwen/Qwen2.5-1.5B-Instruct",
+    "unsloth/Llama-3.2-1B-Instruct",
+    "HuggingFaceTB/SmolLM2-360M-Instruct"
+  ],
+  "reset_markers": ["<|im_start|>system", "<|start_header_id|>system"],
+  "probe_prefixes": ["per-"]
+}
