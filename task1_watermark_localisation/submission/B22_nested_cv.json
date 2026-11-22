@@ -1,0 +1,152 @@
+{
+ "cv_foldmean": 0.8275227924895224,
+ "cv_std": 0.01922938701838499,
+ "image_mean": 0.8274467625688912,
+ "folds": [
+  0.8293275935222785,
+  0.8281205075963817,
+  0.8481116803202906,
+  0.840079402503645,
+  0.7919747785050163
+ ],
+ "cells": {
+  "pixelseal|F": {
+   "n": 90,
+   "mean": 0.7903449205758147
+  },
+  "pixelseal|S": {
+   "n": 80,
+   "mean": 0.7842866393579234
+  },
+  "trustmark|F": {
+   "n": 88,
+   "mean": 0.7534672032025728
+  },
+  "trustmark|S": {
+   "n": 82,
+   "mean": 0.8469943673380961
+  },
+  "stegastamp|F": {
+   "n": 87,
+   "mean": 0.910520061168449
+  },
+  "stegastamp|S": {
+   "n": 83,
+   "mean": 0.8813250311382161
+  }
+ },
+ "clean": true,
+ "kind": "chains2: per-cell choice among short lists of chains, in inner folds",
+ "base": "T02",
+ "gain": 0.007045214526648391,
+ "fold_diffs": [
+  0.007896906763577904,
+  0.0040816139229291615,
+  0.012260300223123743,
+  0.01880723567262832,
+  -0.007819983949017173
+ ],
+ "blend_choices": {
+  "pixelseal|F": [
+   "Fsub",
+   "Fsub",
+   "Fsub",
+   "Fsub",
+   "Fsub"
+  ],
+  "trustmark|F": [
+   "T02",
+   "T02",
+   "T02",
+   "T02",
+   "T02"
+  ],
+  "stegastamp|F": [
+   "T03",
+   "T03",
+   "T03",
+   "T03",
+   "T03"
+  ],
+  "pixelseal|S": [
+   "S11snap",
+   "S11snap",
+   "S11snap",
+   "S11snap",
+   "S11snap"
+  ],
+  "trustmark|S": [
+   "P10snap",
+   "P10snap",
+   "P10snap",
+   "P10snap",
+   "P10snap"
+  ],
+  "stegastamp|S": [
+   "P10snap",
+   "P10snap",
+   "P10snap",
+   "P10snap",
+   "P10snap"
+  ]
+ },
+ "blend_final": {
+  "pixelseal|F": "Fsub",
+  "trustmark|F": "T02",
+  "stegastamp|F": "T03",
+  "pixelseal|S": "S11snap",
+  "trustmark|S": "P10snap",
+  "stegastamp|S": "P10snap"
+ },
+ "chain_table": {
+  "pixelseal|F": {
+   "T02": 0.7767,
+   "T03": 0.7744,
+   "Fens": 0.7817,
+   "Fall": 0.7857,
+   "Fsub": 0.7903
+  },
+  "trustmark|F": {
+   "T02": 0.7535
+  },
+  "stegastamp|F": {
+   "T02": 0.9097,
+   "T03": 0.9105,
+   "Fens": 0.9097,
+   "Fall": 0.9021,
+   "Fsub": 0.9097
+  },
+  "pixelseal|S": {
+   "T02": 0.772,
+   "S11snap": 0.7843,
+   "T01snap": 0.7733,
+   "T02snap": 0.7745
+  },
+  "trustmark|S": {
+   "P10snap": 0.847
+  },
+  "stegastamp|S": {
+   "P10snap": 0.8813
+  }
+ },
+ "fchains": [
+  "T02",
+  "T03",
+  "Fens",
+  "Fall",
+  "Fsub"
+ ],
+ "schains": [
+  "T02",
+  "S11snap",
+  "T01snap",
+  "T02snap"
+ ],
+ "fixed_cells": [
+  "trustmark|F=T02",
+  "trustmark|S=P10snap",
+  "stegastamp|S=P10snap"
+ ],
+ "note": "free choice over the longer lists (T02 T03 S11 P05 Fens / + E8snap E9snap) gives 0.822780: TrustMark full flips between two equal chains; the lists were shortened and TM|F fixed AFTER seeing that table",
+ "test_wm_frac": 0.4956823012408088
+}
