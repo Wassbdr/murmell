@@ -1,0 +1,34 @@
+endpoint,famille,modele_de_base,role,certitude,note
+ep-01,QA,Qwen2.5-3B-Instruct,"l'un des quatre est la base normale de QA, les autres des doses LoRA",doute,"non tranché : 25 le plus propre, 01 propre, 17 léger écart, 12 propre"
+ep-02,QA,Qwen2.5-3B-Instruct,base + prompt système,sûr,
+ep-03,QB,Qwen2.5-1.5B-Instruct,"LoRA dose 1,0 (modèle différent)",sûr,
+ep-04,QA,Qwen2.5-3B-Instruct,base + watermark,sûr,
+ep-05,LL,Llama-3.2-1B-Instruct,"LoRA dose 1,5 (modèle différent)",sûr,
+ep-06,QB,Qwen2.5-1.5B-Instruct,base + watermark,sûr,
+ep-07,QB,Qwen2.5-1.5B-Instruct,"base, T 0,9 + top_k 50",sûr,
+ep-08,QB,Qwen2.5-1.5B-Instruct,base + prompt système,sûr,
+ep-09,LL,Llama-3.2-1B-Instruct,"LoRA dose 0,5 (modèle différent)",sûr,
+ep-10,LL,Llama-3.2-1B-Instruct,base + watermark,sûr,
+ep-11,LL,Llama-3.2-1B-Instruct,"LoRA dose 1,0 (modèle différent)",sûr,
+ep-12,QA,Qwen2.5-3B-Instruct,"l'un des quatre est la base normale de QA, les autres des doses LoRA",doute,"non tranché : 25 le plus propre, 01 propre, 17 léger écart, 12 propre"
+ep-13,LL,Llama-3.2-1B-Instruct,base normal,sûr,
+ep-14,QA,Qwen2.5-3B-Instruct,"LoRA faible probable, ou base T 0,9 + top_k 50",doute,"sa signature penche vers le LoRA (pente 0,24, p 0,011) ; le banc simulé donne LoRA environ 9 fois sur 10"
+ep-15,LL,Llama-3.2-1B-Instruct,quantifié fp8 (modèle différent),sûr,
+ep-16,LL,Llama-3.2-1B-Instruct,base + persona,sûr,
+ep-17,QA,Qwen2.5-3B-Instruct,"l'un des quatre est la base normale de QA, les autres des doses LoRA",doute,"non tranché : 25 le plus propre, 01 propre, 17 léger écart, 12 propre"
+ep-18,QA,Qwen2.5-3B-Instruct,LoRA dose moyenne (modèle différent),sûr,
+ep-19,LL,Llama-3.2-1B-Instruct,"LoRA dose 0,3 (modèle différent)",sûr,
+ep-20,QB,Qwen2.5-1.5B-Instruct,base + persona,sûr,
+ep-21,QB,Qwen2.5-1.5B-Instruct,"LoRA dose 0,5 (modèle différent)",sûr,
+ep-22,QB,Qwen2.5-1.5B-Instruct,quantifié fp8 (modèle différent),sûr,
+ep-23,QA,Qwen2.5-3B-Instruct,base + persona,sûr,
+ep-24,QA,Qwen2.5-3B-Instruct,LoRA dose forte (modèle différent),sûr,
+ep-25,QA,Qwen2.5-3B-Instruct,"l'un des quatre est la base normale de QA, les autres des doses LoRA",doute,"non tranché : 25 le plus propre, 01 propre, 17 léger écart, 12 propre"
+ep-26,QB,Qwen2.5-1.5B-Instruct,"LoRA dose 0,3 (modèle différent)",sûr,
+ep-27,LL,Llama-3.2-1B-Instruct,"base, T 0,9 + top_k 50",sûr,
+ep-28,QB,Qwen2.5-1.5B-Instruct,"LoRA dose 1,5 (modèle différent)",sûr,
+ep-29,LL,Llama-3.2-1B-Instruct,base + prompt système,sûr,
+ep-30,QB,Qwen2.5-1.5B-Instruct,"base, température 1,0",sûr,
+ep-31,LL,Llama-3.2-1B-Instruct,"base, température 1,0",sûr,
+ep-32,QB,Qwen2.5-1.5B-Instruct,base normal,sûr,
+ep-33,QA,Qwen2.5-3B-Instruct,"base, température 1,0",sûr,
