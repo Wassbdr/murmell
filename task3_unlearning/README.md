@@ -6,7 +6,7 @@ everywhere else. No labels, no retain data, no gold model. Score = forget × ret
 × (per-image prediction match, KL at T = 2), each averaged over exact and altered images, and retain = relative accuracy
 × 1 / (1 + KL to the original) on a hidden control set. Below 70 % validation accuracy the score is 0.
 
-**Best public score: 0.4795**, first on the public board. Best model: `codex_marge_isolee.pt` (submission 4112), attached to the
+**Best public score: 0.4795** (submission 4112). Best model: `codex_marge_isolee.pt` (submission 4112), attached to the
 release [`task3-best-model`](https://github.com/Wassbdr/murmell/releases/tag/task3-best-model) (328 MB, float32 state dict that loads with
 `strict=True`; SHA-256 `616ab7cbf452ab6ab6cbd841cdb9e0563d79f00f994c57c0a6bc71d962f24b52`). The previous best,
 `kimi_conditional_soup50.pt` (0.4793), is attached too.
