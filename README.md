@@ -2,7 +2,7 @@
 
 Team Murmell, European AI Championship (CISPA hackathon), Paris, 21-22 November 2026.
 
-**Slides:** [Murmell - Tasks 1 to 3 (6 min).pdf](slides/Murmell%20-%20Tasks%201%20to%203%20(6%20min).pdf)
+**Slides:** [Murmell - Tasks 1 to 3 (6 min).pdf](slides/Murmell%20-%20Tasks%201%20to%203%20%286%20min%29.pdf)
 
 | Task | Public score | Best solution | Method, code, validation |
 |---|---|---|---|
