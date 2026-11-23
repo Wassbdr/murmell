@@ -160,7 +160,9 @@ VAE grid (AUC 0.50); TruFor as a zero-shot edit detector (AUC 0.45–0.50 on res
   and, without labels, as backgrounds for the synthetic data of the other two methods, never of their own method (a hard
   assertion in [`synth_full.py`](src/synth_full.py)).
 - **Three submissions had a CV leak** (N08 ID 2140, S08 ID 2908, S09 ID 3007): fine-tuned models used on folds whose mask
-  shapes they had seen. Their CV is invalid and they were removed as references. They were sent, so the server still counts them.
+  shapes they had seen. The selection rule recognised fine-tuned runs by the FT_ prefix but not FTt_; at 05:03 it was
+  corrected to rely on the run's arguments, not its name. The FTt_ runs themselves were correct: their use in the
+  selection leaked. The CV of these three submissions is invalid and they were removed as references. They were sent, so the server still counts them.
 - **Public leaderboard.** Models and thresholds come from CV. The public score was watched as an alarm, and at 08:11 it was
   cited when B11 replaced B10 as the reference although the CV gain was below our rule; this was reverted at 08:51.
 - **External models and compute.** ImageNet encoders, the official decoders, SAM ViT-H (image only); our own GPUs besides
