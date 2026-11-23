@@ -6,7 +6,7 @@ everywhere else. No labels, no retain data, no gold model. Score = forget × ret
 × (per-image prediction match, KL at T = 2), each averaged over exact and altered images, and retain = relative accuracy
 × 1 / (1 + KL to the original) on a hidden control set. Below 70 % validation accuracy the score is 0.
 
-**Best public score: 0.4806** (submission 4235). Best model: `cnsu_a32_repair100.pt`, attached to the
+**Best public score: 0.4806** (submission 4235). **Final score (hidden 70 %): 0.4749**, 1st of 44. Best model: `cnsu_a32_repair100.pt`, attached to the
 release [`task3-best-model`](https://github.com/Wassbdr/murmell/releases/tag/task3-best-model) (328 MB, float32 state dict that loads with
 `strict=True`; SHA-256 `57377ff2f5837b9c79ca3f7542aef847c6b28e1caa2022735d56a5d024c79217`). The two previous bests,
 `codex_marge_isolee.pt` (0.4795) and `kimi_conditional_soup50.pt` (0.4793), are attached too.
