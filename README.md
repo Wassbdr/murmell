@@ -4,12 +4,12 @@ Team Murmell, European AI Championship (CISPA hackathon), Paris, 21-22 November 
 
 **Slides:** [Murmell - Tasks 1 to 3 (6 min).pdf](slides/Murmell%20-%20Tasks%201%20to%203%20%286%20min%29.pdf)
 
-Final ranking: Murmell is 1st of 44 teams overall, with 0.9819. The overall score is the mean of the three tasks after
+Final ranking ([final_leaderboard.png](final_leaderboard.png)): Murmell is 1st of 44 teams overall, with 0.9819. The overall score is the mean of the three tasks after
 rescaling each task so that the best team gets 1 and the last 0.
 
 | Task | Public score | Final (hidden 70 %) | Best solution | Method, code, validation |
 |---|---|---|---|---|
-| 1. Watermark localisation | 0.8127 | 0.8328, 2nd of 44 | [B28_final.pt](task1_watermark_localisation/submission/B28_final.pt) | [task1_watermark_localisation](task1_watermark_localisation/) |
+| 1. Watermark localisation | 0.8127 | 0.8328, 2nd of 44 | [B28_final.pt](https://github.com/Wassbdr/murmell/releases/tag/task1-best-model) (release) | [task1_watermark_localisation](task1_watermark_localisation/) |
 | 2. Model equality | 1.00 | 1.0000, 1st, tied with 3 teams | [best_submission.csv](task2_model_equality/best_submission.csv) | [task2_model_equality](task2_model_equality/) |
 | 3. Unlearning | 0.4806 | 0.4749, 1st of 44 | [cnsu_a32_repair100.pt](https://github.com/Wassbdr/murmell/releases/tag/task3-best-model) (release) | [task3_unlearning](task3_unlearning/) |
 
