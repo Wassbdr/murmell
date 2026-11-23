@@ -107,7 +107,7 @@ def main():
         return
     subprocess.run(cmd, cwd=ROOT, check=True)
     log = json.loads((ROOT / "work/submit_log.json").read_text())
-    from src.autosubmit import is_clean          # human 05:50: the reference is the best CLEAN send
+    from tools.autosubmit import is_clean          # human 05:50: the reference is the best CLEAN send
     best = max(json.loads((ROOT / "work/nested" / f"{e['name']}.json").read_text())["cv_foldmean"] for e in log
                if is_clean(e["name"]))
     cv = json.loads((ROOT / "work/nested" / f"{a.name}.json").read_text())["cv_foldmean"]

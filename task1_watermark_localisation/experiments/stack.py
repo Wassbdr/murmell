@@ -4,7 +4,7 @@ predicted-small): [regime-appropriate synthetic map, snapDF map, box mask (TM de
 method one-hot (3), predicted regime (const)].  Net: 5 conv layers (32 ch, dilations 1,2,4,8,1), BCE + soft per-image mIoU.
 Outer fold k: train on the 4 other folds (inner 4-fold cross-fit gives out-of-sample predictions for the threshold per
 method x predicted regime), predict fold k. Test: model trained on all 510 (5 seeds averaged), thresholds from outer OOF.
-    python -m src.stack --name ST1 --device cuda:1
+    python -m experiments.stack --name ST1 --device cuda:1
 """
 import argparse
 import json

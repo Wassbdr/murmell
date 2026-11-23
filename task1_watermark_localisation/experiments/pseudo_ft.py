@@ -10,8 +10,8 @@ real distribution: fine-tune on them with pseudo-labels from the best SYNTHETIC-
 No train label is used anywhere (teachers must be synthetic-only runs: R_*, D5_*, DT5_*, D2_* ... NOT FT_*)
 => the predictions on ALL real train images stay out-of-sample; same cell restriction as the base (args inherited).
 "VAL step" lines = real train images of the base's regime, as src.train_full.
-    python -m src.pseudo_ft --base R_D2_ps_amp4 --teacher R_D2_ps_amp4_tta R_D2_ps_noamp_tta --exp PL_R_D2_ps_amp4 --steps 2000 --device cuda:0
-    python -m src.pseudo_ft --base RF_D2_tm --teacher RF_D2_tm D2_tm_tta --exp PL_RF_D2_tm --p_rescale 0 --p_feather 0.8 --feather_max 4 ...
+    python -m experiments.pseudo_ft --base R_D2_ps_amp4 --teacher R_D2_ps_amp4_tta R_D2_ps_noamp_tta --exp PL_R_D2_ps_amp4 --steps 2000 --device cuda:0
+    python -m experiments.pseudo_ft --base RF_D2_tm --teacher RF_D2_tm D2_tm_tta --exp PL_RF_D2_tm --p_rescale 0 --p_feather 0.8 --feather_max 4 ...
 Outputs <out_root>/<exp>/{train.npy, test.npy, model.pt, args.json}.
 """
 import argparse

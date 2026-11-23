@@ -2,7 +2,7 @@
 canvas_s = reflect-pad of y to S = round(512 s) (centred); d_s = Emb(canvas_s, m) - mean_r Emb(canvas_s, r_r)
 (message-specific part); score(s, offset) = normalised xcorr(hp(d_s) cropped, hp(y)); best over a coarse-to-fine s grid
 and all integer offsets. Returns s, (L, T) = frame position inside the canvas, z vs random messages.
-    python -m src.geo_fit --validate tm --n 12 --device cuda:1      (check on synthetic pool items with known geometry)
+    python -m experiments.geo_fit --validate tm --n 12 --device cuda:1      (check on synthetic pool items with known geometry)
 """
 import argparse
 import sys
@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from src.data import ROOT
-from src.geo_check2 import hp, score_map
+from experiments.geo_check2 import hp, score_map
 
 sys.path.insert(0, str(ROOT / "kit"))
 

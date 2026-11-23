@@ -2,7 +2,7 @@
 share (label-free routing).  For each method: standard chain = masks + nested scores of the current best full-cell chain;
 specialist = mean of the RH_* runs (optionally averaged with the standard map).  (tau, source, post-proc, threshold) are chosen
 in inner folds.  Writes DIR/TAG_train_scores.npy and DIR/TAG_test_bin.npy (TAG = Ftiny), a chain for src/final_stage/chains2.py.
-    python src/final_stage/tiny_route.py --dir DIR
+    python experiments/tiny_route.py --dir DIR
 """
 import argparse, os, sys
 import numpy as np

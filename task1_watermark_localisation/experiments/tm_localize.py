@@ -3,7 +3,7 @@ Runs with the PRIVATE env work/venv_tm09 (trustmark 0.9.2 --no-deps; other deps 
 the main venv keeps trustmark 0.8.0).  For each predicted-small TrustMark image: all localize() boxes (+ the top one)
 are scored with the official kit decoder and the KNOWN message (box_search.Scorer), the best is edge-refined
 (aspect <= 2:1, official doc), saved as work/boxes/trustmark_<split>_loc09_0of1.json (same format as box_search).
-    work/venv_tm09/bin/python -m src.tm_localize --split train --device cuda:0 [--limit 5]
+    work/venv_tm09/bin/python -m experiments.tm_localize --split train --device cuda:0 [--limit 5]
 """
 import argparse
 import json

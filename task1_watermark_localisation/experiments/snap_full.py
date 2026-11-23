@@ -4,7 +4,7 @@ the image (vase, cones, suitcase).  For each predicted hole component c (area be
   SAM  : the SAM segment q with the best IoU with c replaces c if IoU(q, c) >= GATE
   ELL  : else, if the bbox fill of c is within TOL of pi/4, c is replaced by the ellipse inscribed in its bbox
 (GATE, AMAX, ellipse on/off, TOL) chosen per method in inner folds; label-free at test time.
-    python src/final_stage/snap_full.py --dir DIR     -> DIR/FsnapX_train_scores.npy, DIR/FsnapX_test_bin.npy (chain for chains2.py)
+    python experiments/snap_full.py --dir DIR     -> DIR/FsnapX_train_scores.npy, DIR/FsnapX_test_bin.npy (chain for chains2.py)
 """
 import argparse, glob, itertools, os, sys
 import numpy as np

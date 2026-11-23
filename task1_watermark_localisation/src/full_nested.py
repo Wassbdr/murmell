@@ -104,7 +104,7 @@ def main():
     ap.add_argument("--write", type=int, default=0); ap.add_argument("--procs", type=int, default=8)
     ap.add_argument("--topk", type=int, default=6)       # pairs only among the top-k singles (0 = all pairs)
     ap.add_argument("--means", default="")               # e.g. "3,4,5": also try the mean of the top-n singles
-    ap.add_argument("--stack", type=int, default=0)      # 1: add the nested 128x128 stacker (src.stack2) as a candidate
+    ap.add_argument("--stack", type=int, default=0)      # 1: add the nested 128x128 stacker (experiments.stack2) as a candidate
     ap.add_argument("--stack_gate", type=float, default=0.003)   # keep it only if gain >= gate and >= 4/5 outer folds
     ap.add_argument("--topm", type=int, default=0)       # M > 0: ADV variant = equal-weight ensemble of the top-M combos (ranked on
     ap.add_argument("--expdec", type=int, default=0)     # N > 0: per-image expected-mIoU decoding for the top-N combos per cell
@@ -126,7 +126,7 @@ def main():
     s = np.full(510, np.nan); choice, final = {}, {}; B = np.zeros((1020, 128, 128), bool)
     STK = None
     if a.stack:
-        from src.stack2 import stack_maps
+        from experiments.stack2 import stack_maps
         STK = stack_maps(ovr, ovt)
     s2 = np.full(510, np.nan); choice2, final2 = {}, {}; B2 = np.zeros((1020, 128, 128), bool)   # variant WITH the stacker
     for m in METHODS:

@@ -1,7 +1,7 @@
 """Timed send (Sun 07:32): the 10-min server cooldown is shared with the teammate, whose automation takes each slot ~2 s after
-it opens.  Same conditions as src.autosubmit.send (candidate READY: clean, rule, md5, checker, SAM clearance), but the checks
+it opens.  Same conditions as tools.autosubmit.send (candidate READY: clean, rule, md5, checker, SAM clearance), but the checks
 are done BEFORE the slot opens and the upload is fired at a given clock time, retried a few times on HTTP 429 only.
-    python -m src.fastsend --name T01 --at 07:39:49 [--tries 6 --gap 0.7]
+    python -m tools.fastsend --name T01 --at 07:39:49 [--tries 6 --gap 0.7]
 Logs exactly like autosubmit (work/submit_log.json); never prints credentials.
 """
 import argparse
@@ -9,7 +9,7 @@ import json
 import time
 from datetime import datetime
 
-from src import autosubmit as A
+from tools import autosubmit as A
 from src.data import ROOT
 
 
