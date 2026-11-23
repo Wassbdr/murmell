@@ -3,7 +3,8 @@
 Each test image carries a PixelSeal, TrustMark or StegaStamp watermark over part of the frame. We predict a 128×128 mask
 of the watermarked cells. The method and the embedded message are given for every image.
 
-Submission: [submission/B28_final.pt](submission/B28_final.pt). Nested 5-fold CV 0.8285 on the 510 training images,
+Submission: [B28_final.pt](https://github.com/Wassbdr/murmell/releases/tag/task1-best-model), attached to the release `task1-best-model` (16.7 MB; MD5
+`bfbf5f3a24b65f406236c83552c82434`, as in [submission/B28_spec.json](submission/B28_spec.json)). Nested 5-fold CV 0.8285 on the 510 training images,
 public leaderboard 0.8127. The CV is optimistic: it is nested per stage, not end to end, and the final list of chains was
 shortened after seeing their scores. Before the results we expected about 0.81 on the hidden split. The final score on
 the hidden 70 % is 0.8328, 2nd of 44 teams on this task (best 0.8524); the ranking does not say which of our submissions
@@ -48,6 +49,16 @@ Details, ablations and limits: [REPORT.md](REPORT.md).
 | Nested selection | [full_nested.py](src/full_nested.py), [nested_cv.py](src/nested_cv.py), [night.py](src/night.py), [selector3.py](src/selector3.py) |
 | Final blend (B28) | [final_stage/chains2.py](src/final_stage/chains2.py) `--step build`, then [final_stage/snap_stage.py](src/final_stage/snap_stage.py) on each chain, then `chains2.py --step blend`; see [B28_spec.json](submission/B28_spec.json) |
 | Submission | [submit.py](src/submit.py); upload tools in [tools/](tools/) |
+
+Other scripts kept in `src/`, not in the B28 chain:
+
+| Script | Role |
+|---|---|
+| [final_stage/blend_small.py](src/final_stage/blend_small.py), [final_stage/blend_apply.py](src/final_stage/blend_apply.py) | Used for earlier references (B10/B11), not for B28 |
+| [final_stage/final_chain.py](src/final_stage/final_chain.py) | Used for an intermediate candidate (B15), not for B28 |
+| [selector.py](src/selector.py) | v1 of the per-image selector, used before [selector3.py](src/selector3.py) |
+| [final_stage/make_oof.py](src/final_stage/make_oof.py), [final_stage/asm_sel.py](src/final_stage/asm_sel.py), [final_stage/small_pool.py](src/final_stage/small_pool.py) | Role not documented |
+| [loss_analysis.py](src/loss_analysis.py) | Breaks down where a candidate loses its points; `make_oof.py` imports its `rebuild` |
 
 Abandoned experiments, including the self-training on test images (tried, excluded by decision, in no submission), are
 in [experiments/](experiments/) with one line each on what was tested and the result.
