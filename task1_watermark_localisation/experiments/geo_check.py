@@ -2,7 +2,7 @@
 shift <= 20 px)". For full-regime images: reflect-pad the 512 frame to a canvas covering a hypothetical embedding
 rectangle of size S = 512*s at offset (L, T) <= 0, decode the canvas with the official decoder, and measure the
 agreement with the KNOWN message, agree = mean (2m-1) tanh(logit). Null: same search with random messages.
-    python -m src.geo_check --n 6 --device cuda:0
+    python -m experiments.geo_check --n 6 --device cuda:0
 """
 import argparse
 import sys

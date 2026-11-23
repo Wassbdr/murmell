@@ -11,9 +11,9 @@ Model: smp U-Net resnet34 (ImageNet), logits 512 -> avg-pool 4 -> 128; loss per 
 FIXED hyper-parameters (set in advance, never tuned): 3000 steps, bs 12, AdamW 3e-4 OneCycle, augmentation = h-flip +
 roll by multiples of 8 px (keeps a possible 8-px grid aligned), seed = fold.
 Fold k: train on the real images of ALL methods with fold != k (408), predict fold k (out-of-fold) and the test set.
-    python -m src.edit_detector --fold 0 --device cuda:0      -> work/runs/E1_f0/{train.npy [510,2,128,128] NaN outside
+    python -m experiments.edit_detector --fold 0 --device cuda:0      -> work/runs/E1_f0/{train.npy [510,2,128,128] NaN outside
                                                                  fold 0, test.npy [1020,2,128,128], args.json}
-    python -m src.edit_detector --assemble 1                  -> runs E1w_<m> (ch1) and E1n_<m> (1 - ch0), train = OOF,
+    python -m experiments.edit_detector --assemble 1                  -> runs E1w_<m> (ch1) and E1n_<m> (1 - ch0), train = OOF,
                                                                  test = mean of the 5 folds, fold_excluded=true
 """
 import argparse

@@ -1,11 +1,11 @@
 """Login-side sender, version 3 (Sun 07:45).  Why: (1) the loop rewrites its candidates (M<HH>, S<HH>) in place at every pass,
 so a candidate must be FROZEN under its own name before it is sent; (2) the 10-min server cooldown is shared with the
 teammate, whose automation takes each slot ~2 s after it opens, so the upload must be fired at the opening second.
-Rule (human 22 Nov 06:55, in src.autosubmit.check): clean candidate, nested CV > S11 (or within 0.002 and clearly different),
+Rule (human 22 Nov 06:55, in tools.autosubmit.check): clean candidate, nested CV > S11 (or within 0.002 and clearly different),
 md5 never resent, checker VALID, SAM cleared.  Added here: a new candidate takes a slot only if its nested CV exceeds the
 best nested CV we already sent by MIN_GAIN (the slot is shared; near-identical files bring no information).
-Bug alarm (src.autosubmit.alert): public < 0.775 or checker failure -> work/STOP_AUTOSEND + work/ALERT.txt.
-    nohup python -m src.autosend3 &          # log: work/autosend.log ; stop: touch work/STOP_AUTOSEND ; ends 10:25
+Bug alarm (tools.autosubmit.alert): public < 0.775 or checker failure -> work/STOP_AUTOSEND + work/ALERT.txt.
+    nohup python -m tools.autosend3 &          # log: work/autosend.log ; stop: touch work/STOP_AUTOSEND ; ends 10:25
 """
 import hashlib
 import json
@@ -13,7 +13,7 @@ import re
 import time
 from datetime import datetime
 
-from src import autosubmit as A
+from tools import autosubmit as A
 from src.data import ROOT
 
 LOOPLOG = ROOT / "output/atelier/0000_NIGHTLOOP.log"
@@ -100,7 +100,7 @@ def record(entry):
     n = entry["name"]; d = json.loads((ROOT / "work/nested" / f"{n}.json").read_text()); b = entry["body"] if isinstance(entry["body"], dict) else {}
     with open(ROOT / "SUBMISSIONS.md", "a") as f:
         f.write(f"| {entry['time_str'][11:]} | {entry['file']} | {entry['md5']} | {d['cv_foldmean']:.6f} | **{b.get('score')}** | **{entry.get('id')}** | "
-                f"{n} = {d.get('snapshot_of', '-')}, kind {d.get('kind')}, sent by src/autosend3.py (previous_best {b.get('previous_best')}) |\n")
+                f"{n} = {d.get('snapshot_of', '-')}, kind {d.get('kind')}, sent by tools/autosend3.py (previous_best {b.get('previous_best')}) |\n")
     sc = b.get("score")
     say(f"SENT {n} nested {d['cv_foldmean']:.6f} public {sc} id {entry.get('id')} status {entry.get('status')}")
     if isinstance(sc, (int, float)) and sc < A.BUG_FLOOR:

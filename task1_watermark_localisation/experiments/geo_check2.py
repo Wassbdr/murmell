@@ -2,7 +2,7 @@
 For each candidate canvas size S = 512*s: canvas = centred reflect-pad of the frame y, w_S = Emb(canvas, msg) - canvas
 (official kit embedder). Score(s, offset) = normalised correlation between high-passed w_S cropped at offset and
 the high-passed frame y. All offsets at once via conv2d. Null: same search with random messages.
-    python -m src.geo_check2 --n 5 --nsmall 2 --device cuda:0
+    python -m experiments.geo_check2 --n 5 --nsmall 2 --device cuda:0
 """
 import argparse
 import sys

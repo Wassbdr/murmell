@@ -1,7 +1,7 @@
 # Task 1 — Can a watermark be localised after the fact?
 
-Team meta-hackathon, CISPA European AI Championship, Paris, 21–22 Nov 2026. Numbers are fully nested 5-fold CV on the 510
-train images unless stated; "public" is the public leaderboard (30 % of the test set).
+Team Murmell, CISPA European AI Championship, Paris, 21–22 Nov 2026. Numbers are 5-fold CV on the 510 train images,
+nested per stage, not end to end (section 5), unless stated; "public" is the public leaderboard (30 % of the test set).
 
 ## 1. Why localise
 
@@ -29,7 +29,9 @@ Yes, to a useful degree, and how well depends on the carrier and on the scale of
 | **all** | 510 | **0.8285** (candidate B28) | 0.83 (not reached) |
 
 Reference: B28, nested 0.8285, public 0.8127 (ID 4137, sent 11:18:00). Before the object-contour step: S11, nested 0.8026,
-public 0.7957 (ID 3236). Our honest expectation on the hidden test is about 0.81.
+public 0.7957 (ID 3236). Before the results, our honest expectation on the hidden test was about 0.81. The final score
+on the hidden 70 % is 0.8328, 2nd of 44 teams on this task (best team 0.8524). The final ranking does not say which of
+our submissions produced it.
 
 ## 3. Method
 
@@ -41,8 +43,9 @@ public 0.7957 (ID 3236). Our honest expectation on the hidden test is about 0.81
    real train images, out of fold. A plain U-Net on the 510 real images alone stayed at the constant level (0.45).
 3. **Decoder-initialised segmenters (PixelSeal and TrustMark; StegaStamp keeps an ImageNet encoder).** The encoder starts
    from the official decoder (TrustMark ResNet-50, PixelSeal ConvNeXt-V2): the features that read the message also say where it is. Without them: −0.042.
-4. **Reducing the synthetic-to-real gap.** The real frames went through a global crop and resize; training with that
-   resampling moves a PixelSeal model from 0.7105 to 0.7524 on real full-regime images. Feathered hole borders help
+4. **Reducing the synthetic-to-real gap.** How the real frames were processed is unknown. PixelSeal is very sensitive to
+   light smoothing, and a crop-and-resize augmentation moves a PixelSeal model from 0.7105 to 0.7524 on real full-regime
+   images: a substitute that works, not a demonstrated explanation. Feathered hole borders help
    TrustMark (0.7263 → 0.7334). A light per-fold fine-tuning on the real images adds 0.005 to 0.007, shift TTA a little more.
 5. **Informed boxes.** A rectangle search ranked by decoding agreement replaces the mask when a box decodes the message
    with bit accuracy ≥ 0.8. Without it: −0.021.
@@ -62,7 +65,7 @@ public 0.7957 (ID 3236). Our honest expectation on the hidden test is about 0.81
    not at first (0.847 against 0.847 on TrustMark small); with a second series of such models it does (TrustMark small 0.855,
    StegaStamp small 0.879). The five candidates built on these models score 0.8118 to 0.8131 on the public board, the six
    earlier ones 0.8055 to 0.8098.
-9. **Fully nested selection.** For each (method, regime) cell, the models, their pairs, the post-processing and the
+9. **Nested selection, per stage.** For each (method, regime) cell, the models, their pairs, the post-processing and the
    threshold are chosen on four folds and scored on the fifth; a rule forbids a model to be used on images whose mask
    shapes it has seen. A per-image mask selector (LightGBM on label-free statistics) added 0.003 to 0.006 before SAM.
 
@@ -88,14 +91,18 @@ public 0.7957 (ID 3236). Our honest expectation on the hidden test is about 0.81
 | + second series of object-trained models in that chain (B28; TrustMark small chosen in 5/5 folds) | 0.8285 | 0.8127 |
 | same with the full cells from the selector on the last pool (B29; best public of the team) | 0.8291 | 0.8132 |
 
-Figures (in `~/wmloc_report/figures/`): `fig1_timeline.png` nested CV and public score of every submission;
-`fig2_gap.png` the synthetic-to-real gap and its closing; `fig3_examples.png` median image of each cell (candidate T01);
-`fig4_sam.png` three transplanted objects before and after the SAM contour step (out-of-fold masks of S11 and of the B10 chains; median gain among improved images. Changed object images,
-better / worse: PixelSeal 28 / 1, TrustMark 26 / 12, StegaStamp 34 / 5).
+Figures (in [`figures/`](figures/)): [`fig1_timeline.png`](figures/fig1_timeline.png) nested CV and public score of each
+step of this table, with the final hidden score as a reference line ([`make_fig1.py`](figures/make_fig1.py));
+[`fig3_examples.png`](figures/fig3_examples.png) median image of each cell (candidate T01);
+[`fig4_sam.png`](figures/fig4_sam.png) three transplanted objects before and after the SAM contour step (out-of-fold masks
+of S11 and of the B10 chains; median gain among improved images. Changed object images, better / worse: PixelSeal 28 / 1,
+TrustMark 26 / 12, StegaStamp 34 / 5). A figure of the synthetic-to-real gap is not included: its bars were measured on
+images seen in training.
 
 ## 5. How much to trust 0.80 and 0.82
 
-Thresholds and model choices are nested, but the result is still optimistic, by about 0.015 for B10.
+Thresholds and model choices are nested per stage, not end to end, so the result is still optimistic, by about 0.015 for
+B10.
 
 - Selection across passes: S11 is the best of about ten successive passes; recipes (crop-resize, feather, object items) were
   kept after reading validation scores on the same 510 images; 20 selector configurations were looked at.
@@ -148,10 +155,14 @@ VAE grid (AUC 0.50); TruFor as a zero-shot edit detector (AUC 0.45–0.50 on res
 
 - No original or clean image was searched or used; ground truth was not reconstructed from outside copies.
 - **Self-training was tried.** Four PL_* models were trained on pseudo-labelled test images (04:35–04:42), before the team
-  decided against it at 05:50. None is in the lineage of any of our 36 submissions (314 runs traced at 08:49). Otherwise test
-  images serve as backgrounds for synthetic data and as inputs at inference.
+  decided against it at 05:50. None is in the lineage of any of our 36 submissions (314 runs traced at 08:49). The script
+  is kept in [`experiments/pseudo_ft.py`](experiments/pseudo_ft.py). Otherwise test images serve as inputs at inference
+  and, without labels, as backgrounds for the synthetic data of the other two methods, never of their own method (a hard
+  assertion in [`synth_full.py`](src/synth_full.py)).
 - **Three submissions had a CV leak** (N08 ID 2140, S08 ID 2908, S09 ID 3007): fine-tuned models used on folds whose mask
-  shapes they had seen. Their CV is invalid and they were removed as references. They were sent, so the server still counts them.
+  shapes they had seen. The selection rule recognised fine-tuned runs by the FT_ prefix but not FTt_; at 05:03 it was
+  corrected to rely on the run's arguments, not its name. The FTt_ runs themselves were correct: their use in the
+  selection leaked. The CV of these three submissions is invalid and they were removed as references. They were sent, so the server still counts them.
 - **Public leaderboard.** Models and thresholds come from CV. The public score was watched as an alarm, and at 08:11 it was
   cited when B11 replaced B10 as the reference although the CV gain was below our rule; this was reverted at 08:51.
 - **External models and compute.** ImageNet encoders, the official decoders, SAM ViT-H (image only); our own GPUs besides

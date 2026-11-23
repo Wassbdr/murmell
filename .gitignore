@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Starter kit, data and watermark models are not in the repository
+kit/
+release/
+models/
+
+# Arrays and run outputs
+*.npy
+*.npz
+task1_watermark_localisation/work/
+task1_watermark_localisation/submissions/
+task2_model_equality/out/

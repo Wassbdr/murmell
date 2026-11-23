@@ -2,16 +2,16 @@
 work/sendqueue.txt = candidate names, best first, one per line ('#' = comment); the file is re-read until 8 s before each
 slot opening, so a better candidate can be put on top at any time.  At each opening (last successful send + 10 min, shared
 with the teammate) the first name that is clean, unsent (md5), VALID for the checker and SAM-cleared is uploaded at the
-opening second (retries on HTTP 429 only).  Every send is logged like src.autosubmit (work/submit_log.json, SUBMISSIONS.md).
+opening second (retries on HTTP 429 only).  Every send is logged like tools.autosubmit (work/submit_log.json, SUBMISSIONS.md).
 Bug alarm unchanged (public < 0.775 -> work/STOP_AUTOSEND).  Stop: touch work/STOP_AUTOSEND.  Ends 11:52.
-    nohup python -m src.sendqueue &          # log: work/autosend.log
+    nohup python -m tools.sendqueue &          # log: work/autosend.log
 """
 import json
 import time
 from datetime import datetime
 
-from src import autosubmit as A
-from src.autosend3 import post, record, say, wait_of
+from tools import autosubmit as A
+from tools.autosend3 import post, record, say, wait_of
 from src.data import ROOT
 
 Q = ROOT / "work/sendqueue.txt"

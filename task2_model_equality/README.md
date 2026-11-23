@@ -6,6 +6,7 @@ Disguises keep the model identity (system prompt, persona, watermark, decoding).
 LoRA adapters at different strengths). Score: MCC over the 528 pairs, 10 % family and 90 % same model.
 
 **Public score: 1.00** (first reached at 02:14 with [best_submission.csv](best_submission.csv)).
+**Final score (hidden 70 %): 1.0000**, 1st, tied with three other teams.
 
 ## Result
 

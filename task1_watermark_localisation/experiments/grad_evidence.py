@@ -4,8 +4,8 @@ c_b(cell) = window sum of <g_b, r> (4x4-px cells, box window of W cells).  With 
     z(cell) = sum_b s_b c_b / sqrt(sum_b c_b^2)
 Where there is no watermark, c_b is driven by content and is independent of s_b  =>  z ~ N(0, 1) (calibrated);
 where the watermark for this message is present, the residual contains it and z > 0.
-    python -m src.grad_evidence --method pixelseal --diag 12 --device cuda:0        # AUC vs GT on a few train images
-    python -m src.grad_evidence --method pixelseal --exp G1_ps --device cuda:0       # maps for all images -> work/runs/G1_ps
+    python -m experiments.grad_evidence --method pixelseal --diag 12 --device cuda:0        # AUC vs GT on a few train images
+    python -m experiments.grad_evidence --method pixelseal --exp G1_ps --device cuda:0       # maps for all images -> work/runs/G1_ps
 Run output (as a "run", so nested selection can use it like any source): train.npy / test.npy = sigmoid(z / 2) float16
 [n,128,128] for window --win cells; args.json with fold_excluded=true (no label used => usable in every cell).
 """

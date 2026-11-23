@@ -8,7 +8,7 @@ One small conv net for the three methods fuses, per image:
 STRICT inputs only: every map comes from a model that saw neither the image nor any shape of its fold (or uses no
 label at all).  Non-fold-clean runs (plain F*/S*/T*/D*, teammate's snapDF whose folds differ) are NOT inputs.
 A missing group for a method is a constant 0.5 plane (the method one-hot tells the net).
-Nesting (15 fits, fixed hyper-parameters of src/stack.py written at 19:55, never tuned):
+Nesting (15 fits, fixed hyper-parameters of experiments/stack.py written at 19:55, never tuned):
   M(-k)    trained on folds != k        -> predicts fold k and the test set
   M(-k,-j) trained on folds not in {k,j} -> predicts folds k and j
   train[k]  (selection maps when k is the OUTER fold): fold k from M(-k), fold j != k from M(-k,-j)  => nothing about
@@ -25,7 +25,7 @@ import torch
 
 from src.combine2 import RE, RT
 from src.data import METHODS, ROOT, folds, masks128, methods
-from src.stack import Net, loss_fn
+from experiments.stack import Net, loss_fn
 
 
 def groups():

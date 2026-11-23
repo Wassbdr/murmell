@@ -6,7 +6,7 @@ message-specific part, correlate it locally with the image.
   frame (K random messages r_j cancel the content-dependent, message-independent part).
   Pick (S, T', L') maximising the global normalised correlation <hp(img), hp(p)>; map = local normalised correlation in
   W x W windows (box filter), pooled to 128 x 128.  GT-free (method + message only).
-    python -m src.ps_informed --split train --device cuda:0 [--limit 6 --diag 1] [--shard 0 --nshards 4]
+    python -m experiments.ps_informed --split train --device cuda:0 [--limit 6 --diag 1] [--shard 0 --nshards 4]
 Output work/psinf/<split>_<shard>of<n>.npz : names, maps [n,128,128] float16, S, T, L, global corr.
 """
 import argparse

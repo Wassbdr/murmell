@@ -1,7 +1,7 @@
 """Candidate check for autonomous submission (rules in SUBMISSIONS.md). Never prints credentials.
-    python -m src.autosubmit --status                 # list candidates and whether each condition holds
-    python -m src.autosubmit --send <name>            # re-checks everything, then uploads (only if all conditions hold)
-    python -m src.autosubmit --verify <name>          # query server for the recorded submission (best effort)
+    python -m tools.autosubmit --status                 # list candidates and whether each condition holds
+    python -m tools.autosubmit --send <name>            # re-checks everything, then uploads (only if all conditions hold)
+    python -m tools.autosubmit --verify <name>          # query server for the recorded submission (best effort)
 State: work/submit_log.json (sent files: name, file, md5, time, id, server body).
 Candidate <name> requires: work/archive/<name>/spec.json (file + md5), work/nested/compare_<name>_vs_<ref>.json with gate
 true where <ref> = sent candidate with best nested CV, and work/review/<name>.verdict whose first word is PASS.
