@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: lint
+        name: Lint and type-check the detector and benchmark
+        entry: make lint
+        language: system
+        pass_filenames: false
+        files: '^(murmell/|task1_watermark_localisation/|Makefile$|pyproject\.toml$)'

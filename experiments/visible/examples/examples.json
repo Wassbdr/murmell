@@ -1,0 +1,29 @@
+[
+  {
+    "name": "good",
+    "split": "hard",
+    "seed": 12302,
+    "index": 148,
+    "miou": 0.8722355369782198,
+    "kind": "logo",
+    "opacity": 0.27820205113236063
+  },
+  {
+    "name": "median",
+    "split": "hard",
+    "seed": 12302,
+    "index": 17,
+    "miou": 0.5825453688133879,
+    "kind": "tiled",
+    "opacity": 0.2838153779490241
+  },
+  {
+    "name": "failure",
+    "split": "held-out",
+    "seed": 12303,
+    "index": 55,
+    "miou": 0.44459375917298,
+    "kind": "tiled",
+    "opacity": 0.1196857908892265
+  }
+]

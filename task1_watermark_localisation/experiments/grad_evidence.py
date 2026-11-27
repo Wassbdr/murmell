@@ -1,4 +1,4 @@
-"""G1: decoder BIT-GRADIENT evidence map (PixelSeal, TrustMark) — informed, GT-free, no training, no geometry fit.
+"""G1: decoder bit-gradient evidence map (PixelSeal, TrustMark). No training or geometry fit.
 For every message bit b: g_b = d logit_b / d image (official decoder, whole frame), r = high-pass residual of the image,
 c_b(cell) = window sum of <g_b, r> (4x4-px cells, box window of W cells).  With the KNOWN message signs s_b = +-1:
     z(cell) = sum_b s_b c_b / sqrt(sum_b c_b^2)

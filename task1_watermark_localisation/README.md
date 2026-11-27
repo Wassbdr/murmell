@@ -10,6 +10,13 @@ shortened after seeing their scores. Before the results we expected about 0.81 o
 the hidden 70 % is 0.8328, 2nd of 44 teams on this task (best 0.8524); the ranking does not say which of our submissions
 produced it.
 
+
+## Public reproduction
+
+The [public benchmark](../benchmarks/results.md) uses official embedders and licensed images, not competition assets.
+See the [tutorial](../docs/tutorial.md) for the packaged CLI and app. The separate visible-watermark detector and its
+results are in [experiments/visible](../experiments/visible/).
+
 ## Method
 
 1. **Regime.** Decode the whole image and compare with the known message. If it decodes, the whole image is watermarked

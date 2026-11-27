@@ -1,0 +1,60 @@
+{
+  "slug": "murmell",
+  "title": "Murmell: invisible watermark localisation",
+  "tagline": "Find the parts of an edited image that still carry an invisible provenance watermark.",
+  "problem": "An image may still carry bits of a watermark after splicing, inpainting, or cropping.",
+  "approach": "Decode TrustMark, then localise cells in the decoded view with a decoder-initialised U-Net.",
+  "stack": [
+    "Python",
+    "PyTorch",
+    "ONNX Runtime",
+    "Gradio",
+    "Matplotlib",
+    "ffmpeg"
+  ],
+  "demo": {
+    "gif": "showcase/demo.gif",
+    "mp4": "showcase/demo.mp4",
+    "poster": "showcase/poster.png",
+    "kind": "synthetic",
+    "caption": "Spliced example, seed 202615, index 0."
+  },
+  "reproduce": [
+    "python -m pip install -r benchmarks/requirements.txt -e .",
+    "make weights",
+    "murmell-detect task1_watermark_localisation/examples/edited.png --method auto -o mask.png"
+  ],
+  "results": [
+    {
+      "label": "Task 1: known-message TrustMark mIoU (hard / held-out)",
+      "value": "0.6257 / 0.4093",
+      "command": "See benchmarks/README.md",
+      "setup": "Three seeds, 128 px, Intel(R) Xeon(R) Processor, 8 threads"
+    },
+    {
+      "label": "Task 1: U-Net latency (PyTorch / ONNX Runtime)",
+      "value": "81.27 / 16.26 ms per image",
+      "command": "See benchmarks/README.md",
+      "setup": "Batch 1, 128 px, Intel(R) Xeon(R) Processor, 8 threads"
+    },
+    {
+      "label": "Task 2: model-equality score",
+      "value": "0.894",
+      "command": "make task2",
+      "setup": "Five seeds, 33 toy endpoints per seed, CPU"
+    },
+    {
+      "label": "Task 3: forecast MAE vs parent baseline",
+      "value": "0.0106 vs 0.0161",
+      "command": "make task3",
+      "setup": "Five seeds, 14 forecasts per seed, CPU"
+    }
+  ],
+  "limits": [
+    "The benchmark knows the embedded message; the product abstains if global decoding is not confident.",
+    "An empty mask does not establish that a watermark is absent.",
+    "Tasks 2 and 3 simulate their competition settings."
+  ],
+  "role": "Built task 1 (watermark localisation) end to end in a team that finished 1st of 44. Tasks 2 and 3 were built by teammates; I later made all three reproducible.",
+  "repo": "https://github.com/Wassbdr/murmell"
+}

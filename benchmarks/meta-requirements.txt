@@ -1,0 +1,8 @@
+av==17.1.0
+decord==0.6.0
+lpips==0.1.4
+opencv-python-headless==4.13.0.92
+pycocotools==2.0.11
+PyWavelets==1.8.0
+requests==2.34.2
+scikit-learn==1.7.2

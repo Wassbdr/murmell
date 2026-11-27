@@ -1,0 +1,57 @@
+{
+ "name": "wm_unet_synth",
+ "file": "wm_unet_synth.pt",
+ "sha256": "5adbfb5b9cbe4810db5b4e5684490f428814e002358d8fb313c4947ba66c65b4",
+ "config": {
+  "encoder": "mobilenet_v2",
+  "size": 256,
+  "cells": 128,
+  "decoder_channels": [
+   128,
+   64,
+   32,
+   16,
+   16
+  ],
+  "steps": 1800,
+  "bs": 16,
+  "lr": 0.002,
+  "seed": 0,
+  "train_seed": 1000,
+  "eval_seed": 1,
+  "n_eval": 500,
+  "cal_seed": 2,
+  "n_cal": 200,
+  "init": "imagenet",
+  "threads": 8
+ },
+ "threshold": 0.6,
+ "metrics": {
+  "miou_nested_per_kind": 0.9137559835172917,
+  "fold_miou": [
+   0.9213969871414097,
+   0.8982903948777802,
+   0.9247866260568738,
+   0.9264582177527617,
+   0.897847691757633
+  ],
+  "miou_nested_single_thr": 0.9146397666001951,
+  "miou_at_cal_thr": 0.9144454393765027,
+  "per_kind": {
+   "text": 0.905654694064447,
+   "logo": 0.9478491388449376,
+   "tiled": 0.8606572546024894,
+   "clean": 0.9833323160807291
+  },
+  "miou_by_opacity": {
+   "0.15-0.30": 0.8534250806232945,
+   "0.30-0.50": 0.9074017406707249,
+   "0.50-0.70": 0.9343813302462781,
+   "0.70-0.91": 0.9393153136506242
+  },
+  "baseline_all_zeros": 0.50971484375
+ },
+ "hardware": "CPU, 8 threads",
+ "train_seconds": 1850,
+ "rebuild": "PYTHONPATH=task1_watermark_localisation python -m experiments.visible.src.train_synth --steps 1800 --bs 16 --lr 0.002 --seed 0 --n_eval 500 --eval_seed 1 --n_cal 200 --cal_seed 2 --workers 3 --threads 0 --name wm_unet_synth --weights imagenet"
+}

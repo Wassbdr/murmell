@@ -8,6 +8,36 @@ LoRA adapters at different strengths). Score: MCC over the 528 pairs, 10 % famil
 **Public score: 1.00** (first reached at 02:14 with [best_submission.csv](best_submission.csv)).
 **Final score (hidden 70 %): 1.0000**, 1st, tied with three other teams.
 
+
+## Run it from a clean clone (synthetic bench, CPU, about 1 minute)
+
+The real endpoints and checkpoints are gone, so [simlab/](simlab/) rebuilds the problem with toy language models:
+3 seeded bigram "base models", 11 endpoints each (6 disguises: plain, replaced system prompt, persona, temperature,
+top_k, keyed watermark sampler; traps: an fp8-like copy and one low-rank adapter served at 4 doses), at most 100 answers
+per endpoint. [simlab/stats.py](simlab/stats.py) computes each statistic of the pipeline with exact toy likelihoods; the
+decisions and the score are the pipeline's own code (`pre_decide`, `decide`, `score_truth` in
+[pipeline/me_pipeline.py](pipeline/me_pipeline.py)).
+
+```bash
+pip install -r requirements.txt
+python -m simlab.run --seeds 0 1 2 3 4        # -> results/simlab.json, results/simlab_family_comparison.png
+python -m pytest -q tests
+```
+
+| Synthetic bench (5 seeds, 33 endpoints each) | Value |
+|---|---|
+| Family MCC | **1.000** on every seed |
+| Same-model MCC | 0.882 mean (1.000, 0.931, 0.931, 0.863, 0.714) |
+| Task score (10 % family + 90 % model) | **0.894** mean |
+
+Setup: seeds 0-4, numpy only, 8-core CPU, about 8 s per seed. Errors are mostly the weakest adapter dose (0.2) read as the
+base and disguises left unresolved; they are listed per endpoint in `results/simlab.json`.
+
+![family comparison](results/simlab_family_comparison.png)
+
+Left: stage a, the log-likelihood of each endpoint's answers under each candidate base (one bright cell per column = one
+family). Right: the gradient-fingerprint self z that separates adapters (orange) from disguises; the label is the decision.
+
 ## Result
 
 Three families of 11 endpoints. We identified the base checkpoints and run them locally:

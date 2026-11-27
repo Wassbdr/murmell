@@ -1,0 +1,95 @@
+{
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "forecast_mae_mean": 0.010550785714285724,
+ "parent_mae_mean": 0.016117142857142868,
+ "direction_accuracy_mean": 0.5285714285714285,
+ "wins": "28/70",
+ "per_seed": [
+  {
+   "count": 14,
+   "forecast_mae": 0.010540642857142886,
+   "parent_mae": 0.01715000000000003,
+   "forecast_wins_vs_parent": 5,
+   "direction_accuracy": 0.42857142857142855,
+   "seed": 0,
+   "best_public": 0.7808,
+   "best_full": 0.7783360279408105,
+   "best_theta": {
+    "loss_mean": 2.0962397651518443,
+    "loss_std": 1.5072661417058402,
+    "temperature": 1.3434665741764118,
+    "retain_w": 0.9803432103830303
+   }
+  },
+  {
+   "count": 14,
+   "forecast_mae": 0.005646285714285707,
+   "parent_mae": 0.015364285714285704,
+   "forecast_wins_vs_parent": 9,
+   "direction_accuracy": 0.7857142857142857,
+   "seed": 1,
+   "best_public": 0.7217,
+   "best_full": 0.7877323862216161,
+   "best_theta": {
+    "loss_mean": 2.141339919475702,
+    "loss_std": 1.5444835875117184,
+    "temperature": 1.033456896653728,
+    "retain_w": 1.2280986192252494
+   }
+  },
+  {
+   "count": 14,
+   "forecast_mae": 0.006893999999999988,
+   "parent_mae": 0.0076999999999999924,
+   "forecast_wins_vs_parent": 6,
+   "direction_accuracy": 0.5714285714285714,
+   "seed": 2,
+   "best_public": 0.7512,
+   "best_full": 0.7775236228353116,
+   "best_theta": {
+    "loss_mean": 2.1326217364167057,
+    "loss_std": 1.6120253955107782,
+    "temperature": 1.3352090374923002,
+    "retain_w": 1.4677516514703792
+   }
+  },
+  {
+   "count": 14,
+   "forecast_mae": 0.0065662142857143,
+   "parent_mae": 0.016664285714285736,
+   "forecast_wins_vs_parent": 4,
+   "direction_accuracy": 0.42857142857142855,
+   "seed": 3,
+   "best_public": 0.7794,
+   "best_full": 0.7869286651432942,
+   "best_theta": {
+    "loss_mean": 2.154147160606799,
+    "loss_std": 1.6059727187136619,
+    "temperature": 1.073635685732959,
+    "retain_w": 1.3007372436796856
+   }
+  },
+  {
+   "count": 14,
+   "forecast_mae": 0.023106785714285736,
+   "parent_mae": 0.023707142857142878,
+   "forecast_wins_vs_parent": 4,
+   "direction_accuracy": 0.42857142857142855,
+   "seed": 4,
+   "best_public": 0.7528,
+   "best_full": 0.778089377544556,
+   "best_theta": {
+    "loss_mean": 2.1234581098877494,
+    "loss_std": 1.4821133788702725,
+    "temperature": 1.0584558272108884,
+    "retain_w": 1.195991450777861
+   }
+  }
+ ]
+}

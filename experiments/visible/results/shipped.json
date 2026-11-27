@@ -1,0 +1,167 @@
+{
+  "cpu": "Intel(R) Xeon(R) Processor",
+  "threads": 8,
+  "pytorch": "2.5.1+cpu",
+  "onnxruntime": "1.20.1",
+  "size": 128,
+  "image_count_per_split": 192,
+  "seeds": {
+    "validation": 12301,
+    "hard": 12302,
+    "held-out": 12303
+  },
+  "models": {
+    "round1": {
+      "threshold": 0.9,
+      "train_seed": 0,
+      "hard": {
+        "all": 0.599170662131706,
+        "foreground": 0.2199715644634778,
+        "thin text": 0.5669693094329811,
+        "thin text_foreground": 0.1470473291623976,
+        "low opacity": 0.5560900938297306,
+        "low opacity_foreground": 0.14267595055614507,
+        "textured": 0.5716777555597485,
+        "textured_foreground": 0.166127515331182,
+        "logo": 0.6290518190114842,
+        "logo_foreground": 0.27890355024734076,
+        "tiled": 0.5755908242362513,
+        "tiled_foreground": 0.23245777277550686,
+        "clean": 0.6781005859375,
+        "clean_foreground": null
+      },
+      "held-out": {
+        "all": 0.5288932894137959,
+        "foreground": 0.03467788528416555,
+        "thin text": 0.5050952575877569,
+        "thin text_foreground": 0.02363245422938881,
+        "low opacity": 0.5005305523863965,
+        "low opacity_foreground": 0.03467788528416555,
+        "textured": 0.5132089505011378,
+        "textured_foreground": 0.028130932283930155,
+        "logo": 0.5115517967709753,
+        "logo_foreground": 0.049099393636298706,
+        "tiled": 0.47853407657164415,
+        "tiled_foreground": 0.03439106128938574,
+        "clean": 0.7598470052083334,
+        "clean_foreground": null
+      },
+      "pytorch_ms": 22.87823484374485,
+      "onnx": {
+        "max_abs_error": 1.3589859008789062e-05,
+        "mask_disagreements": 1,
+        "hard_all": 0.5991714782723941,
+        "hard_foreground": 0.21997295081928459,
+        "held-out_all": 0.5288932894137959,
+        "held-out_foreground": 0.03467788528416555,
+        "ms": 5.875604062509865
+      }
+    },
+    "contrast": {
+      "threshold": 0.825,
+      "train_seed": 0,
+      "hard": {
+        "all": 0.61662784343634,
+        "foreground": 0.26312352577979153,
+        "thin text": 0.6048288625319996,
+        "thin text_foreground": 0.22057562554506893,
+        "low opacity": 0.5549336355050434,
+        "low opacity_foreground": 0.13742671802685602,
+        "textured": 0.5854133968715113,
+        "textured_foreground": 0.2004136813297018,
+        "logo": 0.6200949948638487,
+        "logo_foreground": 0.26190413721713274,
+        "tiled": 0.6307381935735556,
+        "tiled_foreground": 0.321920039334011,
+        "clean": 0.6055123465401786,
+        "clean_foreground": null
+      },
+      "held-out": {
+        "all": 0.5205659607873273,
+        "foreground": 0.028348633046293984,
+        "thin text": 0.5061604968891754,
+        "thin text_foreground": 0.0275980834451715,
+        "low opacity": 0.4970474399127081,
+        "low opacity_foreground": 0.028348633046293984,
+        "textured": 0.5053165423579845,
+        "textured_foreground": 0.012351557770889214,
+        "logo": 0.5003226547131929,
+        "logo_foreground": 0.02719620747304863,
+        "tiled": 0.47752297174682923,
+        "tiled_foreground": 0.031106200566818575,
+        "clean": 0.7120739164806548,
+        "clean_foreground": null
+      }
+    },
+    "demo": {
+      "threshold": 0.6,
+      "hard": {
+        "all": 0.5774120271849504,
+        "foreground": 0.3043911126046691,
+        "thin text": 0.5068691270522718,
+        "thin text_foreground": 0.16098538843172805,
+        "low opacity": 0.5510423282710879,
+        "low opacity_foreground": 0.2683304025965761,
+        "textured": 0.45782392051329507,
+        "textured_foreground": 0.1498757607478781,
+        "logo": 0.6301732027288182,
+        "logo_foreground": 0.3774914163075617,
+        "tiled": 0.6226078065568792,
+        "tiled_foreground": 0.3908536651812348,
+        "clean": 0.48685782296316965,
+        "clean_foreground": null
+      },
+      "held-out": {
+        "all": 0.47703149829025,
+        "foreground": 0.09350454391742193,
+        "thin text": 0.473559391732162,
+        "thin text_foreground": 0.06577552154475567,
+        "low opacity": 0.470525673690204,
+        "low opacity_foreground": 0.09350454391742193,
+        "textured": 0.406154164180412,
+        "textured_foreground": 0.0359533890514415,
+        "logo": 0.47583908035830863,
+        "logo_foreground": 0.11556593404950768,
+        "tiled": 0.4585261743312543,
+        "tiled_foreground": 0.11120342213684443,
+        "clean": 0.5300074986049107,
+        "clean_foreground": null
+      }
+    },
+    "demo_recalibrated": {
+      "threshold": 0.95,
+      "hard": {
+        "all": 0.6117274706723402,
+        "foreground": 0.3340864730337011,
+        "thin text": 0.5488916561854559,
+        "thin text_foreground": 0.19685565218624462,
+        "low opacity": 0.5873578484472702,
+        "low opacity_foreground": 0.2891419469152818,
+        "textured": 0.4967784604051438,
+        "textured_foreground": 0.16002264657241408,
+        "logo": 0.6636913330360033,
+        "logo_foreground": 0.40725270266244223,
+        "tiled": 0.6527309700828698,
+        "tiled_foreground": 0.4121766453450915,
+        "clean": 0.5044381277901786,
+        "clean_foreground": null
+      },
+      "held-out": {
+        "all": 0.48858729789492017,
+        "foreground": 0.08612225288996944,
+        "thin text": 0.486838516391955,
+        "thin text_foreground": 0.06621589595693604,
+        "low opacity": 0.48161654767752,
+        "low opacity_foreground": 0.08612225288996944,
+        "textured": 0.4251924944945491,
+        "textured_foreground": 0.03237418046230172,
+        "logo": 0.48744763515002937,
+        "logo_foreground": 0.1053303770927553,
+        "tiled": 0.465278811726361,
+        "tiled_foreground": 0.09443859576956005,
+        "clean": 0.54534912109375,
+        "clean_foreground": null
+      }
+    }
+  }
+}

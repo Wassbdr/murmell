@@ -1,0 +1,131 @@
+{
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "score_mean": 0.8936399999999999,
+ "mcc_family_mean": 1.0,
+ "mcc_model_mean": 0.8818199999999999,
+ "per_seed": [
+  {
+   "seed": 0,
+   "mcc_family": 1.0,
+   "mcc_model": 0.7142,
+   "score": 0.7428,
+   "model_pairs": {
+    "tp": 31,
+    "tn": 116,
+    "fp": 4,
+    "fn": 14
+   },
+   "errors": [
+    {
+     "endpoint": "ep-01",
+     "role": "topk",
+     "predicted": "lora",
+     "why": "truncated sampling at T 0.731 ({'k': 20, 'observed': 0, 'expected': 328.3, 'ratio': 0.0}); adapter, weaker dose served with truncated sampling: calibrated p 0.0034 along ep-25 (t 2.84), dose ratio 0.3"
+    },
+    {
+     "endpoint": "ep-11",
+     "role": "plain",
+     "predicted": "unres",
+     "why": "no trap signal (T 0.706, z0 -0.92, fingerprint self p 0.37158 (z 0.25), smallest calibrated p 0.0012 along ep-05); plain candidate 2 of 3: sum of squares of its base-model statistics 3.2 (4 expected),"
+    },
+    {
+     "endpoint": "ep-14",
+     "role": "lora@0.2",
+     "predicted": "base",
+     "why": "no trap signal (T 0.69, z0 1.41, fingerprint self p 0.19544 (z 0.82), smallest calibrated p 0.00685 along ep-10); plain candidate 1 of 3: sum of squares of its base-model statistics 2.32 (4 expected),"
+    },
+    {
+     "endpoint": "ep-30",
+     "role": "persona",
+     "predicted": "unres",
+     "why": "no trap signal (T 0.709, z0 -1.23, fingerprint self p 0.58757 (z -0.28), smallest calibrated p 0.13174 along ep-33); plain candidate 2 of 2: sum of squares of its base-model statistics 1.41 (4 expecte"
+    }
+   ]
+  },
+  {
+   "seed": 1,
+   "mcc_family": 1.0,
+   "mcc_model": 1.0,
+   "score": 1.0,
+   "model_pairs": {
+    "tp": 45,
+    "tn": 120,
+    "fp": 0,
+    "fn": 0
+   },
+   "errors": []
+  },
+  {
+   "seed": 2,
+   "mcc_family": 1.0,
+   "mcc_model": 0.9238,
+   "score": 0.9314,
+   "model_pairs": {
+    "tp": 40,
+    "tn": 120,
+    "fp": 0,
+    "fn": 5
+   },
+   "errors": [
+    {
+     "endpoint": "ep-24",
+     "role": "plain",
+     "predicted": "unres",
+     "why": "no trap signal (T 0.708, z0 -1.15, fingerprint self p 0.51732 (z -0.13), smallest calibrated p 0.00185 along ep-06); plain candidate 3 of 3: sum of squares of its base-model statistics 2.83 (4 expecte"
+    }
+   ]
+  },
+  {
+   "seed": 3,
+   "mcc_family": 1.0,
+   "mcc_model": 0.9238,
+   "score": 0.9314,
+   "model_pairs": {
+    "tp": 40,
+    "tn": 120,
+    "fp": 0,
+    "fn": 5
+   },
+   "errors": [
+    {
+     "endpoint": "ep-33",
+     "role": "hot",
+     "predicted": "lora",
+     "why": "adapter, weaker dose: calibrated p 0.0152 along ep-19 (t 2.38), dose ratio 0.309 (se 0.134); self z 0.68"
+    }
+   ]
+  },
+  {
+   "seed": 4,
+   "mcc_family": 1.0,
+   "mcc_model": 0.8473,
+   "score": 0.8626,
+   "model_pairs": {
+    "tp": 35,
+    "tn": 120,
+    "fp": 0,
+    "fn": 10
+   },
+   "errors": [
+    {
+     "endpoint": "ep-01",
+     "role": "persona",
+     "predicted": "lora",
+     "why": "adapter, weaker dose: calibrated p 0.0149 along ep-18 (t 2.3), dose ratio 0.201 (se 0.102); self z -0.29"
+    },
+    {
+     "endpoint": "ep-20",
+     "role": "system",
+     "predicted": "unres",
+     "why": "no trap signal (T 0.692, z0 1.19, fingerprint self p 0.06495 (z 1.57), smallest calibrated p 0.26344 along ep-15); plain candidate 2 of 3: sum of squares of its base-model statistics 2.48 (4 expected)"
+    }
+   ]
+  }
+ ]
+}
