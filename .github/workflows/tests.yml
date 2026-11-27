@@ -4,17 +4,25 @@ on:
   pull_request:
 jobs:
   task1:
-    runs-on: ubuntu-latest
-    defaults: {run: {working-directory: task1_watermark_localisation}}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11"]
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: "3.11", cache: pip}
-      - run: pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
-      - run: pip install -r requirements.txt
-      - run: python -m pytest -q tests
-      - name: predict.py on a committed example with the committed weights
-        run: python predict.py examples/good.png --gt examples/good_mask.png --out /tmp/pred
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            benchmarks/requirements.txt
+      - run: python -m pip install -r benchmarks/requirements.txt '.[app,onnx,dev]'
+      - run: make lint
+      - run: cd task1_watermark_localisation && python -m pytest -q tests
+      - run: murmell-detect task1_watermark_localisation/examples/good.png -o /tmp/mask.png
+      - run: murmell-export /tmp/murmell.onnx
   task2:
     runs-on: ubuntu-latest
     defaults: {run: {working-directory: task2_model_equality}}
@@ -24,7 +32,7 @@ jobs:
         with: {python-version: "3.11", cache: pip}
       - run: pip install -r requirements.txt
       - run: python -m pytest -q tests
-      - run: python -m simlab.run --seeds 0 --out /tmp/simlab
+      - run: python -m simlab.run --seeds 0 --out /tmp/simlab --results /tmp/results
   task3:
     runs-on: ubuntu-latest
     defaults: {run: {working-directory: task3_unlearning}}
@@ -34,4 +42,4 @@ jobs:
         with: {python-version: "3.11", cache: pip}
       - run: pip install -r requirements.txt
       - run: python -m pytest -q tests
-      - run: python -m simlab.refit --seeds 0
+      - run: python -m simlab.refit --seeds 0 --out /tmp/simlab --results /tmp/results

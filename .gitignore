@@ -18,3 +18,21 @@ task2_model_equality/out/
 # Synthetic runs
 task3_unlearning/out/
 .pytest_cache/
+*.egg-info/
+/build/
+/dist/
+.mypy_cache/
+.ruff_cache/
+/showcase/_video/
+/showcase/_demo.webm
+
+CLAUDE.md
+AGENTS.md
+agents.md
+GEMINI.md
+.claude/
+.cursor/
+.cursorrules
+STATUS.md
+PROGRESS.md
+status.md
