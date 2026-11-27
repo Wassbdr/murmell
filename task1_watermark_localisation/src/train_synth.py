@@ -6,7 +6,7 @@ scored on the fifth, official metric of src/metric.py). The evaluation set uses 
 
     python -m src.train_synth --steps 1500                 # ~30 min on 8 CPU cores
 Outputs: weights/<name>.pt (float16 state dict) + weights/<name>.json (card: config, metrics, threshold, SHA-256),
-         work/synth/oof.npy (eval probabilities), work/synth/results.json.
+         work/synth/oof.npy (eval probabilities), work/synth/results.json and results/<name>_results.json (committed).
 """
 import argparse
 import hashlib
@@ -80,7 +80,7 @@ def main():
                     persistent_workers=a.workers > 0)
     net = build_net(weights=None if a.weights == "none" else a.weights)
     opt = torch.optim.AdamW(net.parameters(), lr=a.lr, weight_decay=1e-4)
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=a.steps, pct_start=0.05)
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=a.steps, pct_start=max(0.05, 2 / a.steps))
     t0 = time.time(); run = None
     for step, (x, y) in enumerate(dl, 1):
         loss = loss_fn(net(x), y)
@@ -122,6 +122,8 @@ def main():
         per_image_iou=[round(float(v), 4) for v in fixed], train_seconds=round(train_s), infer_ms_per_image=round(infer_ms, 1),
     )
     (work / "results.json").write_text(json.dumps(results, indent=1))
+    (ROOT / "results").mkdir(exist_ok=True)
+    (ROOT / "results" / f"{a.name}_results.json").write_text(json.dumps(results, indent=1))
     sd = {k: v.half() if v.is_floating_point() else v for k, v in net.state_dict().items()}
     wpath = wdir / f"{a.name}.pt"; torch.save(sd, wpath)
     card = dict(name=a.name, file=wpath.name, sha256=sha256(wpath), config=results["config"], threshold=thr,

@@ -39,8 +39,8 @@ def evaluate(P, verbose=True, name="", groups=None, G=None, F=None, me=None, rg=
     res = {}
 
     def fold_stats(s, mask):
-        v = [s[mask & (F == f)].mean() for f in range(5)]
-        return float(np.mean(v)), float(np.std(v))
+        v = [s[mask & (F == f)].mean() for f in range(5) if (mask & (F == f)).any()]
+        return (float(np.mean(v)), float(np.std(v))) if v else (float("nan"), float("nan"))
 
     all_ = np.ones(len(P), bool)
     res["all"] = fold_stats(s_nested, all_)

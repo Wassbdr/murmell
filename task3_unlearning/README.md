@@ -11,6 +11,35 @@ release [`task3-best-model`](https://github.com/Wassbdr/murmell/releases/tag/tas
 `strict=True`; SHA-256 `57377ff2f5837b9c79ca3f7542aef847c6b28e1caa2022735d56a5d024c79217`). The two previous bests,
 `codex_marge_isolee.pt` (0.4795) and `kimi_conditional_soup50.pt` (0.4793), are attached too.
 
+
+## Run it from a clean clone (synthetic refit loop, CPU, seconds)
+
+The forget set, the gold models and the leaderboard are not public, so [simlab/](simlab/) replays the refit loop on a
+seeded toy scorer with the same structure (forget × retain, forget = moments match × prediction match, public score on a
+fixed 30 % of the images). Each round, from earlier receipts only, it calibrates an offline simulator against the
+official scores, moves the global targets (loss mean and std, temperature, retention weight) by a bounded step, writes
+a forecast, then submits. The receipts and forecasts are scored unchanged by
+[backtest/backtest_recorded_forecasts.py](backtest/backtest_recorded_forecasts.py).
+
+```bash
+pip install -r requirements.txt
+python -m simlab.refit --seeds 0 1 2 3 4      # -> results/simlab.json, results/simlab_forecast_vs_actual.png
+python -m pytest -q tests
+```
+
+| Synthetic backtest (5 seeds × 14 forecasts) | Value |
+|---|---|
+| Forecast mean absolute error | **0.0106** |
+| Parent-score baseline error | 0.0161 |
+| Forecast closer than the parent baseline | 28 of 70 |
+| Direction of change correct | 53 % |
+
+Setup: seeds 0-4, 8 initial designs + 14 rounds per seed, numpy only, 8-core CPU. The forecast has a lower mean error
+than the parent baseline but wins less than half the time: near the optimum the changes are smaller than the noise of
+the 30 % public split. The competition-time error (0.004) cannot be rerun without the receipts and is not claimed here.
+
+![forecast vs actual](results/simlab_forecast_vs_actual.png)
+
 ## The idea
 
 A model that never saw these images gets about 4 out of 5 wrong, almost always toward a sibling class (boats 29 to 33,
