@@ -1,41 +1,47 @@
 # Murmell
 
-Murmell finds the pixels covered by visible watermarks on CPU, for image reviewers and developers who need a binary mask.
+Murmell finds which parts of a spliced, inpainted, or cropped image still carry an invisible provenance watermark.
 
-<img src="showcase/demo.gif" alt="Gradio demo on two hard scenes and a faint held-out mark" width="560">
+<img src="showcase/demo.gif" alt="Gradio shows the edited image, decoded regime and predicted watermark mask" width="560">
 
 ```sh
 python -m pip install -r benchmarks/requirements.txt -e .
-murmell-detect task1_watermark_localisation/examples/good.png -o mask.png
+make weights
+murmell-detect task1_watermark_localisation/examples/edited.png --method auto -o mask.png
 ```
 
-**Comparison:** mIoU on 192 synthetic images per split; training seeds 0, 1, 2; 1,600 updates per seed at 128 px.
-CPU timing: Intel Xeon, 8 threads, batch 1, PyTorch.
+The CPU rebuild downloads the official TrustMark Q weights and trains the U-Net once.
 
-| Detector | Hard mIoU | Held-out mIoU | ms/image |
-|---|---:|---:|---:|
-| Murmell local contrast (opt-in) | **0.6254** | 0.5243 | 11.49 |
-| Murmell residual supervision (experiment) | 0.6015 | 0.5062 | 10.10 |
-| Murmell retrained round 1 (default recipe) | 0.5995 | 0.5308 | 9.80 |
-| WDNet-style | 0.5874 | 0.5083 | 8.55 |
-| Split then Refine-style | 0.5873 | 0.5181 | 13.95 |
-| SLBR-style | 0.5816 | 0.5154 | 7.70 |
-| Plain RGB U-Net | 0.5784 | 0.5077 | 7.31 |
-| All-empty mask | 0.5219 | **0.5415** | n/a |
+**Public TrustMark benchmark:** known message, 60 scenes per split, 128 px U-Nets over three training seeds,
+Intel Xeon with 8 threads. The product instead decodes the image without being given a message.
+See the [protocol and results](benchmarks/results.md) for foreground IoU and per-family tables.
+
+| Model | Hard mIoU | Held-out mIoU |
+|---|---:|---:|
+| Murmell with decoder, boxes and MobileSAM | 0.6257 | 0.4093 |
+| TrustMark decoder U-Net | 0.4934 | 0.3997 |
+| ImageNet U-Net | 0.4870 | 0.3402 |
+| TrustMark sliding-window | 0.3433 | 0.3712 |
+| All-empty | 0.3232 | 0.3026 |
+| All-full | 0.1768 | 0.1974 |
 
 ```text
-Image -> 128 px RGB + high-pass detail -> U-Net -> threshold -> mask at input size
+                        +-> U-Net -> cell probabilities --------+
+Edited RGB -> decode --+                                      +-> 128 x 128 mask
+                        +-> message agreement -> box / regime --+
 ```
+
+**Competition:** team of 3, 1st overall of 44 teams, in the event organised by CISPA and Fraunhofer AISEC with Meta.
+The team placed **2nd on Task 1**. The [competition write-up](task1_watermark_localisation/README.md) is separate
+from the public benchmark; no competition data were used for the latter.
 
 ## Use and reproduce
 
-- [Tutorial](docs/tutorial.md): run the CLI, Python API, Gradio app or ONNX export on your own images.
-- [Model card](docs/model_card.md): shipped seed-0 scores, foreground IoU, failure examples and CPU runtime.
-- [Benchmark](benchmarks/results.md): all seeds, model changes, failure slices and parity checks. Run `make bench`.
-- [Architecture](docs/architecture.md): inference, checkpoint selection and evaluation isolation.
-- Run `make install`, `make test` and `make lint` for development; `make showcase` to rebuild the demo assets.
-
-The bundled model ships at threshold 0.900. Use `--variant contrast` to select the local-contrast checkpoint.
+- [Tutorial](docs/tutorial.md): CLI, Python API, Gradio and ONNX export on your own images.
+- [Model card](docs/model_card.md): calibration, known limitations and CPU runtime.
+- [Benchmark sources and licences](benchmarks/invisible-sources.md): public images, official embedders and checkpoints.
+- [Architecture](docs/architecture.md): regeneration, inputs and evaluation isolation.
+- Run `make install`, `make test` and `make lint` for development, or `make showcase` to rebuild the demo.
 
 ## Other tasks
 
@@ -44,16 +50,11 @@ The bundled model ships at threshold 0.900. Use `--variant contrast` to select t
 | 2. Model equality | `make task2` | [Synthetic endpoint benchmark](docs/task2.md) |
 | 3. Unlearning | `make task3` | [Synthetic refit backtest](docs/task3.md) |
 
-Murmell finished first of 44 teams in the original competition. The archived task write-ups describe that work;
-the current benchmark is a separate visible-watermark experiment.
-
 ## Roadmap and known limitations
 
-- Neither new variant beat round 1 or the all-empty baseline on held-out mIoU. Faint marks and unfamiliar textured
-  backgrounds are the main failure modes. Next, evaluate on licensed, manually labelled photographs.
-- The paper-style references are small CPU reimplementations, not the authors' full systems or weights.
-  CLWD and LVW were not used because reuse and redistribution terms were unclear.
-- The detector was not trained to locate invisible watermarks. Tasks 2 and 3 run simulations, not the competition
-  endpoints or scoring service.
+- The public generator draws from four photos. Split and family scores are not evidence of arbitrary-image accuracy.
+- A failed global decode gives an empty mask. Cropping or splicing can hide the message even where marked cells remain.
+- Known-message reference scores do not measure product performance. Task 2 and Task 3 use simulations.
+- The earlier visible-watermark detector is a different product, preserved in [experiments/visible](experiments/visible/).
 
 [MIT licence](LICENSE).

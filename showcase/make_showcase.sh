@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 root="$PWD"
 python_bin="$(command -v "${PYTHON:-python}")"
-make shipped task2 task3 PYTHON="$python_bin"
+mkdir -p task1_watermark_localisation/work
 PYTHONPATH="$root/task1_watermark_localisation" "$python_bin" showcase/build_assets.py
 
 (cd task1_watermark_localisation && exec "$python_bin" app.py) > task1_watermark_localisation/work/showcase-app.log 2>&1 &

@@ -1,4 +1,4 @@
-"""Generate demo examples, a poster and portfolio metadata from measured results."""
+"""Generate the edited example, poster, and showcase metadata."""
 
 import json
 from pathlib import Path
@@ -7,109 +7,90 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from app import overlay
 from PIL import Image
-from predict import overlay
-from src.bench import EVAL_SEEDS, corpus, probabilities, tensors
-from src.hard_watermarks import HELD_OUT
-from src.metric import miou_batch
+from src.invisible_data import CELLS, SIZE, make_invisible_scene, photo
+from src.invisible_product import EccEmbedder
+from src.metric import miou_image
 
-from murmell import Detector
+from murmell import ProvenanceDetector
+from murmell.trustmark import TrustMarkAdapter
 
 matplotlib.use("Agg")
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLES = ROOT / "task1_watermark_localisation" / "examples"
+EXAMPLE = ROOT / "task1_watermark_localisation/examples/edited.png"
 SHOWCASE = ROOT / "showcase"
+SEED = 202615
 
 
-def build_examples() -> list[dict]:
-    detector = Detector.load()
-    samples = {split: corpus(EVAL_SEEDS[split], 192, 128, **config)
-               for split, config in (("hard", {}), ("held-out", {"config": HELD_OUT}))}
-    ranked = {}
-    for split, scenes in samples.items():
-        rgb, labels = tensors(scenes)[:2]
-        target = labels[:, 0].numpy()
-        pred = probabilities(detector.model, rgb) >= detector.threshold
-        scores = miou_batch(pred, target)
-        marked = np.flatnonzero(target.any(axis=(1, 2)))
-        ranked[split] = [(float(scores[i]), int(i), pred[i]) for i in marked[np.argsort(scores[marked])]]
+def build_example() -> dict:
+    detector = ProvenanceDetector.load()
+    adapter = detector.families["trustmark"].decoder
+    if not isinstance(adapter, TrustMarkAdapter):
+        raise TypeError("The showcase requires TrustMark.")
+    embedder = EccEmbedder(adapter, marked=True)
+    index = 0
+    scene = make_invisible_scene(embedder, SEED, index)
+    donor = photo("hubble_deep_field").resize((SIZE, SIZE), Image.Resampling.LANCZOS)
+    edited = Image.new("RGB", (3 * SIZE, SIZE))
+    edited.paste(donor, (0, 0))
+    edited.paste(scene.image, (SIZE, 0))
+    edited.paste(donor, (2 * SIZE, 0))
+    support = np.zeros((SIZE, 3 * SIZE), dtype=bool)
+    support[:, SIZE:2 * SIZE] = scene.support
+    edge = SIZE // CELLS
+    target = support.reshape(CELLS, edge, CELLS, 3 * edge).sum(axis=(1, 3)) >= 3 * edge**2 / 2
+    recovered = adapter.recover(edited)
+    result = detector.predict(edited)
+    if (recovered is None or not np.array_equal(recovered[0], adapter.payload(scene.message))
+            or result.regime != "local region" or result.mask.getbbox() is None):
+        raise RuntimeError("The edited example did not produce a confident local mask.")
 
-    choices = [("good", "hard", ranked["hard"][-1]),
-               ("median", "hard", ranked["hard"][len(ranked["hard"]) // 2]),
-               ("failure", "held-out", ranked["held-out"][0])]
-    figure, axes = plt.subplots(3, 4, figsize=(12.8, 7.2), dpi=100)
-    examples = []
-    for row, (name, split, (score, index, mask)) in enumerate(choices):
-        scene = samples[split][index]
-        Image.fromarray(scene.image).save(EXAMPLES / f"{name}.png")
-        Image.fromarray(scene.mask.astype(np.uint8) * 255).save(EXAMPLES / f"{name}_mask.png")
-        examples.append(dict(name=name, split=split, seed=EVAL_SEEDS[split], index=index, miou=score,
-                             kind=scene.kind, opacity=scene.opacity))
-        panels = (scene.image, scene.mask, mask, overlay(scene.image, mask))
-        for col, (title, panel) in enumerate(zip(("Input", "Target", "Prediction", "Overlay"), panels)):
-            ax = axes[row, col]
-            ax.imshow(panel, cmap="gray", vmin=0, vmax=1)
-            ax.set_xticks([])
-            ax.set_yticks([])
-            if row == 0:
-                ax.set_title(title)
-        axes[row, 0].set_ylabel(f"{name.title()} ({split})\n{scene.kind}, opacity {scene.opacity:.2f}")
-        axes[row, 3].text(1.06, 0.5, f"mIoU\n{score:.3f}", transform=axes[row, 3].transAxes, va="center")
-    figure.suptitle("Murmell | Visible-watermark localisation on CPU")
-    figure.subplots_adjust(left=0.11, right=0.91, top=0.89, bottom=0.04, wspace=0.18, hspace=0.18)
+    EXAMPLE.parent.mkdir(parents=True, exist_ok=True)
+    edited.save(EXAMPLE)
+    panels = (edited, target, overlay(edited, result.mask))
+    titles = ("Edited image", "Where the mark was applied", "Predicted regions")
+    figure, axes = plt.subplots(1, 3, figsize=(12.8, 7.2), dpi=100, layout="constrained")
+    for axis, title, panel in zip(axes, titles, panels):
+        axis.imshow(panel, cmap="gray", vmin=0, vmax=1, aspect="auto")
+        axis.set_box_aspect(1 / 3)
+        axis.set_title(title)
+        axis.axis("off")
+    figure.suptitle(f"Invisible provenance watermark | {result.method}: {result.regime}", fontsize=20)
     figure.savefig(SHOWCASE / "poster.png")
     plt.close(figure)
-    (EXAMPLES / "examples.json").write_text(json.dumps(examples, indent=2) + "\n")
-    return examples
+    return {"seed": SEED, "index": index, "regime": result.regime,
+            "miou": miou_image(np.asarray(result.mask) > 0, target)}
 
 
-def write_metadata(examples: list[dict]) -> None:
-    shipped = json.loads((ROOT / "benchmarks/shipped.json").read_text())
-    detector = shipped["models"]["round1"]
-    equality = json.loads((ROOT / "task2_model_equality/results/simlab.json").read_text())
-    refit = json.loads((ROOT / "task3_unlearning/results/simlab.json").read_text())
-    setup = (f"{shipped['image_count_per_split']} synthetic images per split, train seed 0, "
-             f"128 px, {shipped['cpu']}, {shipped['threads']} threads")
+def write_metadata(example: dict) -> None:
+    measured = json.loads((ROOT / "benchmarks/trustmark.json").read_text())
+    prior = json.loads((SHOWCASE / "showcase.json").read_text())
     data = {
         "slug": "murmell",
-        "title": "Murmell: watermark localisation",
-        "tagline": "Find the pixels covered by a visible watermark with a CPU detector and a binary mask.",
-        "problem": "A watermark flag does not show where the mark is. A spatial mask lets a reviewer inspect the result.",
-        "approach": "A U-Net combines RGB and high-pass detail. Its threshold is selected on seeded validation scenes.",
+        "title": "Murmell: invisible watermark localisation",
+        "tagline": "Find the parts of an edited image that still carry an invisible provenance watermark.",
+        "problem": "An image may still carry bits of a watermark after splicing, inpainting, or cropping.",
+        "approach": "Decode TrustMark, then localise cells in the decoded view with a decoder-initialised U-Net.",
         "stack": ["Python", "PyTorch", "ONNX Runtime", "Gradio", "Matplotlib", "ffmpeg"],
         "demo": {"gif": "showcase/demo.gif", "mp4": "showcase/demo.mp4", "poster": "showcase/poster.png",
-                 "kind": "synthetic", "caption": "Live CPU predictions on two hard scenes and one held-out failure."},
-        "reproduce": ["python -m pip install -e .", "murmell-detect task1_watermark_localisation/examples/good.png -o mask.png",
-                      "make install && make showcase"],
-        "results": [
-            {"label": "Task 1: shipped detector mIoU (hard / held-out)",
-             "value": f"{detector['hard']['all']:.4f} / {detector['held-out']['all']:.4f}",
-             "command": "make shipped", "setup": setup},
-            {"label": "Task 1: CPU latency (PyTorch / ONNX Runtime)",
-             "value": f"{detector['pytorch_ms']:.2f} / {detector['onnx']['ms']:.2f} ms per image",
-             "command": "make shipped", "setup": f"Batch 1; {setup}"},
-            {"label": "Task 1: demo mIoU (good / median / failure)",
-             "value": " / ".join(f"{example['miou']:.3f}" for example in examples),
-             "command": "make showcase", "setup": setup},
-            {"label": "Task 2: model-equality score",
-             "value": f"{equality['score_mean']:.3f}", "command": "make task2",
-             "setup": "Five seeds, 33 toy endpoints per seed, CPU"},
-            {"label": "Task 3: forecast MAE vs parent baseline",
-             "value": f"{refit['forecast_mae_mean']:.4f} vs {refit['parent_mae_mean']:.4f}",
-             "command": "make task3", "setup": "Five seeds, 14 forecasts per seed, CPU"},
-        ],
+                 "kind": "synthetic", "caption": f"Spliced example, seed {example['seed']}, index {example['index']}."},
+        "reproduce": ["python -m pip install -r benchmarks/requirements.txt -e .", "make weights",
+                      "murmell-detect task1_watermark_localisation/examples/edited.png --method auto -o mask.png"],
+        "results": measured["showcase_results"] + prior["results"][-2:],
         "limits": [
-            "Neither candidate beat all-empty mIoU on held-out scenes. Faint marks and new textures remain difficult.",
-            "The detector was not trained on invisible watermarks. Tasks 2 and 3 simulate their competition settings.",
+            "The benchmark knows the embedded message; the product abstains if global decoding is not confident.",
+            "An empty mask does not establish that a watermark is absent.",
+            "Tasks 2 and 3 simulate their competition settings.",
         ],
-        "role": "Built task 1 (watermark localisation) end to end in a team that finished 1st of 44. Tasks 2 and 3 were built by teammates; I later made all three reproducible.",
+        "role": prior["role"],
         "repo": "https://github.com/Wassbdr/murmell",
     }
     (SHOWCASE / "showcase.json").write_text(json.dumps(data, indent=2) + "\n")
-    print("Wrote demo examples, showcase/poster.png and showcase/showcase.json")
+    print("Wrote edited example, showcase/poster.png and showcase/showcase.json")
 
 
 if __name__ == "__main__":
     torch.set_num_threads(min(8, torch.get_num_threads()))
-    write_metadata(build_examples())
+    write_metadata(build_example())
