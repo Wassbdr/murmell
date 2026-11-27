@@ -98,11 +98,19 @@ def chart(report, hist, path):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
-    ap.add_argument("--rounds", type=int, default=14); a = ap.parse_args()
-    rdir = HERE / "results"; rdir.mkdir(exist_ok=True); per = []
+    ap = argparse.ArgumentParser(description="Backtest the refit loop against synthetic scoring receipts.")
+    ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
+    ap.add_argument("--rounds", type=int, default=14)
+    ap.add_argument("--out", type=Path, default=HERE / "out" / "simlab", help="Directory for per-seed receipts.")
+    ap.add_argument("--results", type=Path, default=HERE / "results", help="Directory for the chart and summary.")
+    a = ap.parse_args()
+    if a.rounds < 1:
+        ap.error("--rounds must be positive.")
+    rdir = a.results
+    rdir.mkdir(parents=True, exist_ok=True)
+    per = []
     for s in a.seeds:
-        rep, hist = run(s, a.rounds)
+        rep, hist = run(s, a.rounds, out=a.out / str(s))
         if s == a.seeds[0]:
             chart(rep, hist, rdir / "simlab_forecast_vs_actual.png")
         sm = rep["summary"]; per.append(dict(**{k: sm[k] for k in ("count", "forecast_mae", "parent_mae", "forecast_wins_vs_parent",

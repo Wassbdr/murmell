@@ -71,14 +71,18 @@ def chart(r, path):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
-    ap.add_argument("--out", default="out/simlab"); a = ap.parse_args()
+    ap = argparse.ArgumentParser(description="Run the synthetic model-equality benchmark.")
+    ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
+    ap.add_argument("--out", default="out/simlab", help="Directory for per-seed artifacts.")
+    ap.add_argument("--results", type=Path, default=HERE / "results", help="Directory for the chart and summary.")
+    a = ap.parse_args()
     out = Path(a.out); out = out if out.is_absolute() else HERE / out; out.mkdir(parents=True, exist_ok=True)
     res = []
     for s in a.seeds:
         t = time.time(); r = run_seed(s, out); res.append(r)
         print(f"seed {s}: {r['score']}  errors {[(x['endpoint'], x['role'], x['predicted']) for x in r['errors']]}  {time.time() - t:.0f}s", flush=True)
-    rdir = HERE / "results"; rdir.mkdir(exist_ok=True)
+    rdir = a.results
+    rdir.mkdir(parents=True, exist_ok=True)
     chart(res[0], rdir / "simlab_family_comparison.png")
     summ = dict(seeds=a.seeds, score_mean=float(np.mean([r["score"]["score"] for r in res])),
                 mcc_family_mean=float(np.mean([r["score"]["mcc_family"] for r in res])),
