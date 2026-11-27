@@ -1,0 +1,37 @@
+name: tests
+on:
+  push:
+  pull_request:
+jobs:
+  task1:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: task1_watermark_localisation}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q tests
+      - name: predict.py on a committed example with the committed weights
+        run: python predict.py examples/good.png --gt examples/good_mask.png --out /tmp/pred
+  task2:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: task2_model_equality}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q tests/test_simlab.py
+      - run: python -m simlab.run --seeds 0 --out /tmp/simlab
+  task3:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: task3_unlearning}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q tests
+      - run: python -m simlab.refit --seeds 0

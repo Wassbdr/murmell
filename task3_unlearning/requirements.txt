@@ -1,0 +1,4 @@
+# Task 3 synthetic refit loop and backtest (simlab/, backtest/backtest_recorded_forecasts.py). The real training needs torch, timm and a GPU.
+numpy>=1.24
+matplotlib>=3.7
+pytest>=7

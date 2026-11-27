@@ -1,0 +1,4 @@
+# Task 2 synthetic bench (simlab/). The real pipeline also needs torch, transformers, peft and a GPU.
+numpy>=1.24
+matplotlib>=3.7
+pytest>=7
