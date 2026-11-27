@@ -1,82 +1,65 @@
 {
- "slug": "murmell",
- "title": "Murmell: watermark localisation",
- "tagline": "Finds which pixels of an image carry a watermark: a CPU-trainable U-Net, reproducible end to end on seeded synthetic data, from the team that finished 1st of 44 at the European AI Championship.",
- "problem": "Watermark removal and provenance checks need to know where a watermark is, not just whether there is one. In the competition the mask was scored by mIoU over 128x128 cells on a hidden split, so every threshold had to be chosen without looking at the images being scored.",
- "approach": "A seeded generator draws text, logo and tiled watermarks with random opacity, size, rotation and position on procedural backgrounds, with exact masks. A U-Net (MobileNetV2 encoder, RGB + high-pass input) is trained on CPU on that stream and pooled to the 128x128 cell grid of the competition. The mask threshold is chosen per watermark kind on four folds and scored on the fifth (nested cross-validation), with the repository's own metric.",
- "stack": [
-  "Python",
-  "PyTorch",
-  "segmentation-models-pytorch",
-  "NumPy",
-  "Gradio",
-  "Playwright",
-  "matplotlib",
-  "ffmpeg"
- ],
- "demo": {
-  "gif": "showcase/demo.gif",
-  "mp4": "showcase/demo.mp4",
-  "poster": "showcase/poster.png",
-  "kind": "synthetic",
-  "caption": "The Gradio app computing live on three synthetic images (good, median and failure case): the predicted watermark mask is drawn over each image with its mIoU against the exact ground truth."
- },
- "reproduce": [
-  "git clone https://github.com/Wassbdr/murmell && cd murmell/task1_watermark_localisation",
-  "pip install -r requirements.txt",
-  "python predict.py examples/good.png --gt examples/good_mask.png && python app.py",
-  "bash showcase/make_showcase.sh   # retrains and rebuilds every artifact"
- ],
- "results": [
-  {
-   "label": "Task 1 watermark localisation, nested 5-fold mIoU (synthetic)",
-   "value": "0.914 (folds 0.921, 0.898, 0.925, 0.926, 0.898)",
-   "command": "cd task1_watermark_localisation && python -m src.train_synth --steps 1800",
-   "setup": "synthetic visible watermarks, train seed 1000 (streamed, 1800 x 16 images), eval seed 1 (500 images, 5 folds), 256 px, CPU only, 8 threads, 31 min training"
+  "slug": "murmell",
+  "title": "Murmell: watermark localisation",
+  "tagline": "Find the pixels covered by a visible watermark with a CPU detector and a binary mask.",
+  "problem": "A watermark flag does not show where the mark is. A spatial mask lets a reviewer inspect the result.",
+  "approach": "A U-Net combines RGB and high-pass detail. Its threshold is selected on seeded validation scenes.",
+  "stack": [
+    "Python",
+    "PyTorch",
+    "ONNX Runtime",
+    "Gradio",
+    "Matplotlib",
+    "ffmpeg"
+  ],
+  "demo": {
+    "gif": "showcase/demo.gif",
+    "mp4": "showcase/demo.mp4",
+    "poster": "showcase/poster.png",
+    "kind": "synthetic",
+    "caption": "Live CPU predictions on two hard scenes and one held-out failure."
   },
-  {
-   "label": "Task 1 all-empty-mask baseline, same metric",
-   "value": "0.510",
-   "command": "cd task1_watermark_localisation && python -m src.train_synth --steps 1800",
-   "setup": "synthetic visible watermarks, train seed 1000 (streamed, 1800 x 16 images), eval seed 1 (500 images, 5 folds), 256 px, CPU only, 8 threads, 31 min training"
-  },
-  {
-   "label": "Task 1 inference time per 256 px image",
-   "value": "13 ms",
-   "command": "cd task1_watermark_localisation && python -m src.train_synth --steps 1800",
-   "setup": "batch 32, CPU only, 8 threads"
-  },
-  {
-   "label": "Task 1 demo cases (good / median / failure)",
-   "value": "1.000 / 0.943 / 0.487",
-   "command": "python showcase/make_examples.py",
-   "setup": "eval seed 1, picked by measured IoU, CPU only, 8 threads"
-  },
-  {
-   "label": "Task 2 model equality, score on the synthetic endpoint bench",
-   "value": "0.894 (family MCC 1.000, model MCC 0.882)",
-   "command": "cd task2_model_equality && python -m simlab.run --seeds 0 1 2 3 4",
-   "setup": "5 seeds x 33 toy endpoints (3 families x 11), numpy, CPU"
-  },
-  {
-   "label": "Task 3 forecast error on the synthetic refit loop",
-   "value": "MAE 0.0106 vs parent baseline 0.0161",
-   "command": "cd task3_unlearning && python -m simlab.refit --seeds 0 1 2 3 4",
-   "setup": "5 seeds x 14 forecasts, toy scorer, numpy, CPU"
-  },
-  {
-   "label": "Competition final ranking (historical, not rerun: data not public)",
-   "value": "1st of 44, overall 0.9819; task 1 0.8328",
-   "command": "see final_leaderboard.png",
-   "setup": "European AI Championship, Paris, November 2026, hidden 70 % split"
-  }
- ],
- "limits": [
-  "All fresh numbers are on synthetic data; the competition images (PixelSeal, TrustMark, StegaStamp invisible watermarks) are not public and were not used.",
-  "The synthetic model localises visible overlays; it was not trained on invisible watermarks and will not find them.",
-  "Low-opacity watermarks are the main failure mode (mIoU by opacity: 0.15-0.30 0.85, 0.30-0.50 0.91, 0.50-0.70 0.93, 0.70-0.91 0.94).",
-  "Tasks 2 and 3 run on toy simulations of the competition problems; their competition scores cannot be rerun without the endpoints and receipts."
- ],
- "role": "TODO",
- "repo": "https://github.com/Wassbdr/murmell"
+  "reproduce": [
+    "python -m pip install -e .",
+    "murmell-detect task1_watermark_localisation/examples/good.png -o mask.png",
+    "make install && make showcase"
+  ],
+  "results": [
+    {
+      "label": "Task 1: shipped detector mIoU (hard / held-out)",
+      "value": "0.5992 / 0.5289",
+      "command": "make shipped",
+      "setup": "192 synthetic images per split, train seed 0, 128 px, Intel(R) Xeon(R) Processor, 8 threads"
+    },
+    {
+      "label": "Task 1: CPU latency (PyTorch / ONNX Runtime)",
+      "value": "22.88 / 5.88 ms per image",
+      "command": "make shipped",
+      "setup": "Batch 1; 192 synthetic images per split, train seed 0, 128 px, Intel(R) Xeon(R) Processor, 8 threads"
+    },
+    {
+      "label": "Task 1: demo mIoU (good / median / failure)",
+      "value": "0.872 / 0.583 / 0.445",
+      "command": "make showcase",
+      "setup": "192 synthetic images per split, train seed 0, 128 px, Intel(R) Xeon(R) Processor, 8 threads"
+    },
+    {
+      "label": "Task 2: model-equality score",
+      "value": "0.894",
+      "command": "make task2",
+      "setup": "Five seeds, 33 toy endpoints per seed, CPU"
+    },
+    {
+      "label": "Task 3: forecast MAE vs parent baseline",
+      "value": "0.0106 vs 0.0161",
+      "command": "make task3",
+      "setup": "Five seeds, 14 forecasts per seed, CPU"
+    }
+  ],
+  "limits": [
+    "Neither candidate beat all-empty mIoU on held-out scenes. Faint marks and new textures remain difficult.",
+    "The detector was not trained on invisible watermarks. Tasks 2 and 3 simulate their competition settings."
+  ],
+  "role": "Built task 1 (watermark localisation) end to end in a team that finished 1st of 44. Tasks 2 and 3 were built by teammates; I later made all three reproducible.",
+  "repo": "https://github.com/Wassbdr/murmell"
 }

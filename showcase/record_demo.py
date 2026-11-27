@@ -1,19 +1,30 @@
-"""Record the Gradio app (must be running on 127.0.0.1:7860) on the three examples with Playwright recordVideo -> demo.webm."""
-import sys
-import time
+"""Record the local Gradio app at 1280 by 720."""
+
+import os
+import re
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
-OUT = Path(__file__).resolve().parent; URL = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:7860"
-with sync_playwright() as p:
-    b = p.chromium.launch()
-    ctx = b.new_context(viewport=dict(width=1280, height=720), record_video_dir=str(OUT / "_video"),
-                        record_video_size=dict(width=1280, height=720))
-    pg = ctx.new_page(); pg.goto(URL); pg.wait_for_selector("#run"); time.sleep(2)
-    for k in range(3):
-        pg.locator("tr.tr-body").nth(k).click()
-        time.sleep(1.2); pg.click("#run")
-        pg.wait_for_function("document.body.innerText.includes('watermarked area')", timeout=30000); time.sleep(3.5)
-    vid = pg.video.path(); ctx.close(); b.close()
-Path(vid).replace(OUT / "_demo.webm"); print("video", OUT / "_demo.webm")
+OUT = Path(__file__).resolve().parent
+
+with sync_playwright() as playwright:
+    browser = playwright.chromium.launch()
+    size = {"width": 1280, "height": 720}
+    context = browser.new_context(viewport=size, record_video_dir=OUT / "_video", record_video_size=size)
+    page = context.new_page()
+    page.goto("http://127.0.0.1:7860")
+    for index, name in enumerate(("good", "median", "failure")):
+        page.locator("#demo-examples img").nth(index).click()
+        expect(page.locator("#demo-input img")).to_have_attribute("src", re.compile(f"{name}\\.png"))
+        page.locator("#run").click()
+        expect(page.locator("#info")).to_contain_text(f"{name}: watermarked area", timeout=15000)
+        if name == "good" and (screenshot := os.getenv("SHOWCASE_SCREENSHOT")):
+            page.screenshot(path=screenshot)
+        page.wait_for_timeout(2300)
+    video = page.video
+    context.close()
+    if video is None:
+        raise RuntimeError("No recording produced.")
+    Path(video.path()).replace(OUT / "_demo.webm")
+    browser.close()

@@ -1,33 +1,29 @@
 [
- {
-  "name": "good",
-  "eval_index": 478,
-  "miou": 1.0,
-  "kind": "logo",
-  "size_px": 91.9,
-  "rotation": 0.0,
-  "opacity": 0.621,
-  "jpeg": 73,
-  "coverage": 0.0375
- },
- {
-  "name": "median",
-  "eval_index": 331,
-  "miou": 0.9431,
-  "kind": "text",
-  "size_px": 25.8,
-  "rotation": 22.2,
-  "opacity": 0.529,
-  "coverage": 0.0121
- },
- {
-  "name": "failure",
-  "eval_index": 431,
-  "miou": 0.4874,
-  "kind": "tiled",
-  "size_px": 11.4,
-  "rotation": 36.2,
-  "opacity": 0.17,
-  "coverage": 0.0321
- }
+  {
+    "name": "good",
+    "split": "hard",
+    "seed": 12302,
+    "index": 148,
+    "miou": 0.8722355369782198,
+    "kind": "logo",
+    "opacity": 0.27820205113236063
+  },
+  {
+    "name": "median",
+    "split": "hard",
+    "seed": 12302,
+    "index": 17,
+    "miou": 0.5825453688133879,
+    "kind": "tiled",
+    "opacity": 0.2838153779490241
+  },
+  {
+    "name": "failure",
+    "split": "held-out",
+    "seed": 12303,
+    "index": 55,
+    "miou": 0.44459375917298,
+    "kind": "tiled",
+    "opacity": 0.1196857908892265
+  }
 ]

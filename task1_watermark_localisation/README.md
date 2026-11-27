@@ -11,7 +11,12 @@ the hidden 70 % is 0.8328, 2nd of 44 teams on this task (best 0.8524); the ranki
 produced it.
 
 
-## Run it from a clean clone (synthetic data, CPU)
+## Current visible-watermark detector
+
+See the [tutorial](../docs/tutorial.md) for the packaged CLI and app and the
+[model card](../docs/model_card.md) for the default checkpoint and current results.
+
+## Historical synthetic demo (CPU)
 
 The competition images are not public, so [src/synth_visible.py](src/synth_visible.py) generates a seeded dataset of
 visible watermarks: text, logo and tiled marks with random opacity (0.15-0.9), size, rotation, position and colour, on
@@ -24,8 +29,6 @@ the threshold of each watermark kind is chosen on four folds and applied to the 
 ```bash
 pip install -r requirements.txt
 python -m src.train_synth --steps 1800          # ~31 min on 8 CPU threads -> weights/wm_unet_synth.pt + .json card
-python predict.py examples/failure.png --gt examples/failure_mask.png   # -> predictions/failure_mask.png, _overlay.png
-python app.py                                   # Gradio: upload an image, see the predicted mask over it
 python -m pytest -q tests
 ```
 
@@ -38,8 +41,8 @@ python -m pytest -q tests
 | All-empty-mask baseline | 0.5097 |
 
 Setup: 500 synthetic eval images (seed 1), 5 folds, model trained on seed 1000 for 1800 × 16 images, 256 px, CPU only (8 threads), 31 min; inference 13 ms per image. The weights (8 MB, float16) and their card
-(config, metrics, SHA-256, rebuild command) are in [weights/](weights/); the demo cases are in [examples/](examples/):
-good 1.000, median 0.943, failure 0.487 (faint tiled mark).
+(config, metrics, SHA-256, rebuild command) are in [weights/](weights/). The current demo examples use a different
+generator and detector.
 These numbers are for visible watermarks; the competition results below are for invisible ones and were not rerun.
 
 ## Method
