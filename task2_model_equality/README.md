@@ -21,7 +21,7 @@ decisions and the score are the pipeline's own code (`pre_decide`, `decide`, `sc
 ```bash
 pip install -r requirements.txt
 python -m simlab.run --seeds 0 1 2 3 4        # -> results/simlab.json, results/simlab_family_comparison.png
-python -m pytest -q tests/test_simlab.py
+python -m pytest -q tests
 ```
 
 | Synthetic bench (5 seeds, 33 endpoints each) | Value |
