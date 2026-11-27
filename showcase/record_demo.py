@@ -12,7 +12,7 @@ with sync_playwright() as p:
                         record_video_size=dict(width=1280, height=720))
     pg = ctx.new_page(); pg.goto(URL); pg.wait_for_selector("#run"); time.sleep(2)
     for k in range(3):
-        pg.locator(".gallery-item, button.gallery-item, [data-testid='examples'] button, table.examples-table tr, .examples button").nth(k).click()
+        pg.locator("tr.tr-body").nth(k).click()
         time.sleep(1.2); pg.click("#run")
         pg.wait_for_function("document.body.innerText.includes('watermarked area')", timeout=30000); time.sleep(3.5)
     vid = pg.video.path(); ctx.close(); b.close()
