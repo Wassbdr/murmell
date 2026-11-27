@@ -10,6 +10,38 @@ shortened after seeing their scores. Before the results we expected about 0.81 o
 the hidden 70 % is 0.8328, 2nd of 44 teams on this task (best 0.8524); the ranking does not say which of our submissions
 produced it.
 
+
+## Run it from a clean clone (synthetic data, CPU)
+
+The competition images are not public, so [src/synth_visible.py](src/synth_visible.py) generates a seeded dataset of
+visible watermarks: text, logo and tiled marks with random opacity (0.15-0.9), size, rotation, position and colour, on
+procedural backgrounds (gradients, smooth colour fields, shapes, noise, optional JPEG), with exact masks reduced to the
+128 × 128 cell grid. Each item is a pure function of (seed, index). Fonts: DejaVu, shipped with matplotlib.
+[src/train_synth.py](src/train_synth.py) trains the U-Net of [src/train_full.py](src/train_full.py) (MobileNetV2
+encoder, RGB + high-pass input, same loss) on that stream at 256 px and scores it with [src/eval_cv.py](src/eval_cv.py):
+the threshold of each watermark kind is chosen on four folds and applied to the fifth.
+
+```bash
+pip install -r requirements.txt
+python -m src.train_synth --steps 1800          # ~31 min on 8 CPU threads -> weights/wm_unet_synth.pt + .json card
+python predict.py examples/failure.png --gt examples/failure_mask.png   # -> predictions/failure_mask.png, _overlay.png
+python app.py                                   # Gradio: upload an image, see the predicted mask over it
+python -m pytest -q tests
+```
+
+| Synthetic evaluation (500 images, seed 1) | mIoU |
+|---|---|
+| **Nested 5-fold, threshold per kind** | **0.9138** (folds 0.921, 0.898, 0.925, 0.926, 0.898) |
+| Nested 5-fold, one threshold | 0.9146 |
+| Shipped threshold 0.6 (chosen on 200 separate images, seed 2) | 0.9144 |
+| Per kind: text / logo / tiled / clean | 0.906 / 0.948 / 0.861 / 0.983 |
+| All-empty-mask baseline | 0.5097 |
+
+Setup: 500 synthetic eval images (seed 1), 5 folds, model trained on seed 1000 for 1800 × 16 images, 256 px, CPU only (8 threads), 31 min; inference 13 ms per image. The weights (8 MB, float16) and their card
+(config, metrics, SHA-256, rebuild command) are in [weights/](weights/); the demo cases are in [examples/](examples/):
+good 1.000, median 0.943, failure 0.487 (faint tiled mark).
+These numbers are for visible watermarks; the competition results below are for invisible ones and were not rerun.
+
 ## Method
 
 1. **Regime.** Decode the whole image and compare with the known message. If it decodes, the whole image is watermarked
