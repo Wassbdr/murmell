@@ -18,9 +18,13 @@ def per_image_at(P, G, t):
     return miou_batch(P >= t, G)
 
 
-def evaluate(P, verbose=True, name="", groups=None):
-    """groups: optional array of group labels (e.g. method|predicted-regime) for the nested thresholds; default = method."""
-    P = np.asarray(P, np.float32); G = masks128(); F = folds(); me = methods(); rg = regime()
+def evaluate(P, verbose=True, name="", groups=None, G=None, F=None, me=None, rg=None, kinds=METHODS):
+    """groups: optional array of group labels (e.g. method|predicted-regime) for the nested thresholds; default = method.
+    G (masks), F (fold ids), me (method or kind per image), rg (bool full regime) default to the competition data in release/;
+    pass them to score any other labelled set (e.g. the synthetic one of src/synth_visible.py, kinds=its watermark kinds)."""
+    P = np.asarray(P, np.float32)
+    G = masks128() if G is None else np.asarray(G); F = folds() if F is None else np.asarray(F)
+    me = methods() if me is None else np.asarray(me); rg = regime() if rg is None else np.asarray(rg, bool)
     grp = me if groups is None else np.asarray(groups)
     table = {t: per_image_at(P, G, t) for t in THRS}               # 510 per-image scores per threshold
     s_nested = np.zeros(len(P)); thr_used = {}
@@ -30,7 +34,7 @@ def evaluate(P, verbose=True, name="", groups=None):
             if not te.any():
                 continue
             t = max(THRS, key=lambda t: table[t][tr].mean())
-            s_nested[te] = table[t][te]; thr_used.setdefault(m, []).append(round(float(t), 2))
+            s_nested[te] = table[t][te]; thr_used.setdefault(str(m), []).append(round(float(t), 2))
     fixed = table[THRS[np.argmin(abs(THRS - 0.5))]]
     res = {}
 
@@ -40,14 +44,15 @@ def evaluate(P, verbose=True, name="", groups=None):
 
     all_ = np.ones(len(P), bool)
     res["all"] = fold_stats(s_nested, all_)
-    for m in METHODS:
+    for m in kinds:
         res[m] = fold_stats(s_nested, me == m)
     res["small"] = fold_stats(s_nested, ~rg); res["full"] = fold_stats(s_nested, rg)
     res["fixed0.5"] = fold_stats(fixed, all_)
     if verbose:
         print(f"[{name}] nested per-{'group' if groups is not None else 'method'} thr | ALL {res['all'][0]:.4f}±{res['all'][1]:.4f} | "
-              + " ".join(f"{m[:2].upper()} {res[m][0]:.4f}±{res[m][1]:.4f}" for m in METHODS)
+              + " ".join(f"{m[:2].upper()} {res[m][0]:.4f}±{res[m][1]:.4f}" for m in kinds)
               + f" | small {res['small'][0]:.4f} full {res['full'][0]:.4f} | @0.5 {res['fixed0.5'][0]:.4f} | thr {thr_used}")
+    res["fold"] = [float(s_nested[F == f].mean()) for f in range(5)]; res["thr"] = thr_used
     return res, s_nested
 
 

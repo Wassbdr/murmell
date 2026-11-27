@@ -14,3 +14,7 @@ models/
 task1_watermark_localisation/work/
 task1_watermark_localisation/submissions/
 task2_model_equality/out/
+
+# Synthetic runs
+task3_unlearning/out/
+.pytest_cache/

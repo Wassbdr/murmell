@@ -348,18 +348,20 @@ def make_input(x_u8):
 INIT = "imagenet"      # "dec": encoder weights = the official watermark DECODER (TrustMark ResNet-50 / PixelSeal ConvNeXtV2)
 
 
-def build(encoder, nostride):
+def build(encoder, nostride, weights="imagenet", **unet_kw):
     if INPUT in ("dec", "dec512"):     # decoder-style input, 3 channels in [-1, 1]; "dec" = half resolution, "dec512" = full
         return smp.Unet(encoder, encoder_weights="imagenet" if INIT == "imagenet" else None, in_channels=3, classes=1)
-    m = smp.Unet(encoder, encoder_weights="imagenet", in_channels=6, classes=1)
+    m = smp.Unet(encoder, encoder_weights=weights, in_channels=6, classes=1, **unet_kw)
     if nostride:
         raise NotImplementedError("stem-stride removal breaks smp skip sizes; TODO custom decoder")
     return m
 
 
 class Net(nn.Module):
-    def __init__(self, encoder="resnet34", nostride=False):
-        super().__init__(); self.m = build(encoder, nostride); self.nostride = nostride
+    """pool: output cell size in pixels (4 = 512 px image -> 128 x 128 cells, as in the competition)."""
+
+    def __init__(self, encoder="resnet34", nostride=False, pool=4, weights="imagenet", **unet_kw):
+        super().__init__(); self.m = build(encoder, nostride, weights, **unet_kw); self.nostride = nostride; self.pool = pool
 
     def forward(self, x_u8):
         if INPUT == "dec512":  # full resolution, x*2-1; logits 512 -> 128 cells
@@ -371,7 +373,7 @@ class Net(nn.Module):
         if self.nostride:      # encoder sees full res; smp's decoder expects /32 divisibility, output is 4x larger
             out = self.m(x)
             return F.avg_pool2d(out, 16)        # 2048 -> 128
-        return F.avg_pool2d(self.m(x), 4)       # 512 -> 128 logits
+        return F.avg_pool2d(self.m(x), self.pool)   # 512 -> 128 logits
 
 
 def load_decoder_init(net, method):
