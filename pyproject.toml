@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "murmell"
-version = "0.2.0"
-description = "Localise visible watermarks in images on CPU"
+version = "0.3.0"
+description = "Localise invisible provenance watermarks in edited images on CPU"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -17,6 +17,7 @@ dependencies = [
     "segmentation-models-pytorch==0.6.0",
     "torch>=2.5,<3",
     "torchvision>=0.20,<1",
+    "trustmark==0.9.2",
 ]
 
 [project.optional-dependencies]
@@ -34,25 +35,21 @@ murmell-detect = "murmell.cli:main"
 murmell-export = "murmell.onnx:main"
 
 [tool.setuptools]
-packages = ["murmell", "murmell.weights"]
+packages = ["murmell"]
 
 [tool.setuptools.package-data]
 murmell = ["py.typed"]
-"murmell.weights" = ["*.pt"]
 
 [tool.ruff]
 target-version = "py310"
 line-length = 120
 include = [
+    "benchmarks/report_invisible.py",
     "murmell/*.py",
     "showcase/*.py",
     "task1_watermark_localisation/app.py",
-    "task1_watermark_localisation/src/audit_watermarks.py",
-    "task1_watermark_localisation/src/bench.py",
-    "task1_watermark_localisation/src/export_onnx.py",
-    "task1_watermark_localisation/src/hard_watermarks.py",
-    "task1_watermark_localisation/src/shipped_report.py",
-    "task1_watermark_localisation/tests/test_product.py",
+    "task1_watermark_localisation/src/invisible_*.py",
+    "task1_watermark_localisation/tests/test_invisible.py",
 ]
 
 [tool.ruff.lint]

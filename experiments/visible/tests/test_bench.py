@@ -6,10 +6,10 @@ pytest.importorskip("onnxruntime")
 
 import torch
 
-from src.audit_watermarks import label_stats
-from src.bench import calibrate, composited_jitter, foreground_iou, measure, measure_onnx, tensors, train_loss
-from src.hard_watermarks import HARD, HELD_OUT, make_scene
-from murmell.models import ContrastUnet, build_reference
+from experiments.visible.src.audit_watermarks import label_stats
+from experiments.visible.src.bench import calibrate, composited_jitter, foreground_iou, measure, measure_onnx, tensors, train_loss
+from experiments.visible.src.hard_watermarks import HARD, HELD_OUT, make_scene
+from experiments.visible.models import ContrastUnet, build_reference
 
 
 def test_generator_repeats_and_held_out_has_disjoint_shift():

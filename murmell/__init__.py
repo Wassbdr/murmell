@@ -1,5 +1,5 @@
-"""Visible-watermark localisation on CPU."""
+"""Invisible provenance-watermark localisation on CPU."""
 
-from murmell.detector import Detector, Variant, open_image
+from murmell.provenance import Localisation, ProvenanceDetector
 
-__all__ = ["Detector", "Variant", "open_image"]
+__all__ = ["Localisation", "ProvenanceDetector"]

@@ -5,7 +5,7 @@ Every item is a pure function of (seed, index): a procedural background, then on
 on top. The mask is the watermark's own coverage (alpha >= 0.5 before opacity), so it is exact, and it is
 reduced to cells like the competition masks (a cell is 1 when at least half of its pixels are covered).
 
-    python -m src.synth_visible --n 500 --seed 1 --out work/synth_eval     # writes images, masks, meta.json
+    python -m experiments.visible.src.synth_visible --n 500 --seed 1 --out work/synth_eval
 Fonts: the DejaVu fonts shipped with matplotlib (Bitstream Vera / DejaVu licence, redistribution allowed).
 """
 import argparse

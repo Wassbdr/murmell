@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 from PIL import Image
 from torch import nn
 
-from murmell.models import ContrastUnet, RoundOne
+from .models import ContrastUnet, RoundOne
 
 Variant = Literal["round1", "contrast"]
 SIZE = 128
@@ -42,8 +42,8 @@ class Detector:
         path = Path(weights) if weights is not None else WEIGHTS / f"{variant}-0.pt"
         if not path.is_file():
             raise FileNotFoundError(
-                f"Weights not found: {path}. Reinstall murmell for bundled weights, or run "
-                f"`make weights VARIANT={variant}` in the source checkout and pass --weights PATH."
+                f"Weights not found: {path}. Run "
+                f"`make visible-weights VARIANT={variant}` in the source checkout and pass --weights PATH."
             )
         model = RoundOne() if variant == "round1" else ContrastUnet()
         model = model.to(memory_format=torch.channels_last).eval()  # type: ignore[call-overload]

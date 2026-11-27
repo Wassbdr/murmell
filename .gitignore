@@ -12,6 +12,9 @@ models/
 *.npy
 *.npz
 task1_watermark_localisation/work/
+experiments/visible/work/
+experiments/visible/weights/round1-0.pt
+experiments/visible/weights/wm_unet_synth.pt
 task1_watermark_localisation/submissions/
 task2_model_equality/out/
 

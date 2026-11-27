@@ -1,28 +1,32 @@
-# Detect a visible watermark on your own image
+# Find a watermark on your own image
 
-From a clone with Python 3.10 or 3.11, install the pinned CPU dependencies and the package:
+Use Python 3.10 or 3.11. In a clone of this repository:
 
 ```sh
 python -m pip install -r benchmarks/requirements.txt -e '.[app,onnx]'
-murmell-detect path/to/photo.jpg -o mask.png
+make weights
+murmell-detect path/to/edited.jpg --method trustmark -o mask.png
 ```
 
-The PNG is single-channel and the same size as the image. White marks predicted watermark pixels, black marks
-everything else. Use `--variant contrast` to try the second detector, or `--threads 1` to limit CPU use.
-Only load a `--weights` checkpoint from a source you trust.
+The rebuild downloads Adobe's official Q model and trains the localizer on CPU. The PNG contains 128 by 128 cells.
+White denotes predicted watermarked cells. For an overlay on the original image, resize the mask with nearest
+neighbour interpolation and use it as an alpha mask.
 
-For multiple inputs, load the model once. Set PyTorch's thread count for your machine before calling it:
+Use `--method auto` to try the installed decoders. The packaged localizer currently supports TrustMark Q.
+If the decoder cannot recover a confident message, the command prints `no confident decode` and writes an
+empty mask. This is an abstention rather than evidence that the image was never marked.
 
 ```python
-from murmell import Detector, open_image
+from PIL import Image
+from murmell import ProvenanceDetector
 
-detector = Detector.load()
-detector.predict(open_image("path/to/photo.jpg")).save("mask.png")
+detector = ProvenanceDetector.load()
+with Image.open("path/to/edited.jpg") as image:
+    result = detector.predict(image)
+result.mask.save("mask.png")
+print(result.regime)
 ```
 
-Try the [bundled example](../task1_watermark_localisation/examples/good.png) first if your mask is empty.
-Faint or fine marks may not be detected. A mask is a prediction, not a certificate that an image is clean.
-
-Start Gradio with `python task1_watermark_localisation/app.py`, then open <http://127.0.0.1:7860>.
-For ONNX Runtime, run `murmell-export detector.onnx` and use the [model card](model_card.md#cpu-export)
-for input format, threshold, and timings.
+Open `python task1_watermark_localisation/app.py` at <http://127.0.0.1:7860> to see the overlay.
+Use `murmell-export detector.onnx` to export the U-Net, not the decoder, confidence gate or box search.
+See the [model card](model_card.md) for the mask format and known failure modes.

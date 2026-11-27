@@ -14,12 +14,12 @@ import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
 
-from murmell.models import ContrastUnet, Decomposition, SelfCalibrated, SplitThenRefine, build_reference
-from murmell.onnx import export_mask_model
-from src.hard_watermarks import HARD, HELD_OUT, Scene, SceneConfig, make_scene
+from ..models import ContrastUnet, Decomposition, SelfCalibrated, SplitThenRefine, build_reference
+from ..onnx import export_mask_model
+from .hard_watermarks import HARD, HELD_OUT, Scene, SceneConfig, make_scene
 from src.metric import miou_batch
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 REFERENCES = ("unet", "round1", "slbr", "wdnet", "split")
 MODELS = (*REFERENCES, "contrast", "residual")
 LABELS = {
@@ -460,8 +460,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--validation", type=int, default=96)
     parser.add_argument("--eval", type=int, default=192)
     parser.add_argument("--threads", type=int, default=len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1)
-    parser.add_argument("--output", type=Path, default=ROOT / "benchmarks" / "results.md")
-    parser.add_argument("--work", type=Path, default=ROOT / "task1_watermark_localisation" / "work" / "bench")
+    parser.add_argument("--output", type=Path, default=ROOT / "results" / "results.md")
+    parser.add_argument("--work", type=Path, default=ROOT / "work" / "bench")
     parser.add_argument("--checkpoint-dir", type=Path, help="Re-score prior runs and remeasure CPU latency without retraining.")
     args = parser.parse_args()
     if args.size < 64 or args.size > 256 or args.size % 32:

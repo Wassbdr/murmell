@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Localise invisible TrustMark Q provenance watermarks and abstain when a message cannot be recovered.
+- Rebuild the public Task 1 benchmark with official embedders and separate known-message scoring.
+- Export the localizer to ONNX and archive the visible detector under `experiments/visible/`.
+
 ## 0.2.0
 
 - Ship the retrained RGB + high-pass detector with a CLI, Python API, Gradio app and ONNX export.

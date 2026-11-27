@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from skimage import data
 
-from src.synth_visible import WORDS, _font, _logo_layer, background
+from .synth_visible import WORDS, _font, _logo_layer, background
 
 
 @dataclass(frozen=True)

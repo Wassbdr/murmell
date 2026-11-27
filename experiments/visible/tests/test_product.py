@@ -4,12 +4,14 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from murmell import Detector
-from murmell.cli import main
+from experiments.visible.detector import WEIGHTS, Detector
+from experiments.visible.cli import main
 
 
 @pytest.mark.parametrize(("variant", "threshold"), [("round1", 0.900), ("contrast", 0.825)])
 def test_bundled_detector_returns_input_size_binary_mask(variant, threshold):
+    if variant == "round1" and not (WEIGHTS / "round1-0.pt").is_file():
+        pytest.skip("Run make visible-weights VARIANT=round1 to rebuild the archived checkpoint.")
     detector = Detector.load(variant)
     assert detector.variant == variant
     assert detector.threshold == threshold
@@ -22,7 +24,7 @@ def test_bundled_detector_returns_input_size_binary_mask(variant, threshold):
 
 @pytest.mark.parametrize(
     ("case", "message"),
-    [("missing", "Image file not found"), ("bad", "Cannot read image"), ("weights", "make weights VARIANT=round1")],
+    [("missing", "Image file not found"), ("bad", "Cannot read image"), ("weights", "make visible-weights VARIANT=round1")],
 )
 def test_cli_input_errors(tmp_path, monkeypatch, capsys, case, message):
     image = tmp_path / "image.png"

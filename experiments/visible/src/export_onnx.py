@@ -5,8 +5,8 @@ from pathlib import Path
 
 import torch
 
-from murmell.models import ContrastUnet
-from murmell.onnx import export_mask_model
+from ..models import ContrastUnet
+from ..onnx import export_mask_model
 
 
 def main() -> None:

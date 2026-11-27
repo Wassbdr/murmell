@@ -1,0 +1,67 @@
+{
+  "hardware": "Intel(R) Xeon(R) Processor",
+  "rows": {
+    "ImageNet U-Net": [
+      0.4870299128874405,
+      0.3825362721547803,
+      0.34015799211037184,
+      0.1579520282042049
+    ],
+    "TrustMark sliding-window": [
+      0.34328798706812097,
+      0.10039167789518877,
+      0.3711856903991923,
+      0.16251801213921618
+    ],
+    "All-empty": [
+      0.32324117024739585,
+      0.0,
+      0.3026346842447917,
+      0.0
+    ],
+    "All-full": [
+      0.17675882975260418,
+      0.35351765950520836,
+      0.19736531575520833,
+      0.39473063151041665
+    ],
+    "TrustMark decoder U-Net": [
+      0.4934350227353905,
+      0.4212528886130799,
+      0.3997029810973066,
+      0.2930538430647905
+    ],
+    "Global decode regime": [
+      0.6192858744576598,
+      0.5978801687838341,
+      0.3882914838071392,
+      0.21069512457441003
+    ],
+    "Regime and box search": [
+      0.6086931452504906,
+      0.5785196024654286,
+      0.40921306087116976,
+      0.24888249028133577
+    ],
+    "Regime, boxes and MobileSAM": [
+      0.6256816897812391,
+      0.6115828518409218,
+      0.40925788126685053,
+      0.24896563568907917
+    ]
+  },
+  "showcase_results": [
+    {
+      "label": "Task 1: known-message TrustMark mIoU (hard / held-out)",
+      "value": "0.6257 / 0.4093",
+      "command": "See benchmarks/README.md",
+      "setup": "Three seeds, 128 px, Intel(R) Xeon(R) Processor, 8 threads"
+    },
+    {
+      "label": "Task 1: U-Net latency (PyTorch / ONNX Runtime)",
+      "value": "81.27 / 16.26 ms per image",
+      "command": "See benchmarks/README.md",
+      "setup": "Batch 1, 128 px, Intel(R) Xeon(R) Processor, 8 threads"
+    }
+  ]
+}

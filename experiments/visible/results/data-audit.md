@@ -1,6 +1,6 @@
 # Synthetic dataset audit
 
-Regenerate with `make bench-audit`. Test seeds 12302 and 12303; 192 images per split.
+Regenerate with `make visible-audit`. Test seeds 12302 and 12303; 192 images per split.
 Each image has its exact binary target below it. The grid selects the median opacity in each illustrated slice.
 
 ![Hard and held-out examples and targets](data-grid.png)

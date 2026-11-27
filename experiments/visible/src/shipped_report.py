@@ -7,18 +7,18 @@ from pathlib import Path
 import numpy as np
 import onnxruntime
 import torch
-from predict import load, predict
+from ..predict import load, predict
 
-from murmell import Detector
-from src.bench import EVAL_SEEDS, calibrate, corpus, elapsed_ms, hardware, measure, measure_onnx, probabilities, tensors
-from src.hard_watermarks import HARD, HELD_OUT
+from ..detector import Detector
+from .bench import EVAL_SEEDS, calibrate, corpus, elapsed_ms, hardware, measure, measure_onnx, probabilities, tensors
+from .hard_watermarks import HARD, HELD_OUT
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--threads", type=int, default=8)
-    parser.add_argument("--work", type=Path, default=Path("work/shipped"))
-    parser.add_argument("--output", type=Path, default=Path("../benchmarks/shipped.json"))
+    parser.add_argument("--work", type=Path, default=Path(__file__).resolve().parents[1] / "work" / "shipped")
+    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "results" / "shipped.json")
     args = parser.parse_args()
     if args.threads < 1:
         parser.error("--threads must be positive.")

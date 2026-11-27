@@ -1,13 +1,17 @@
 # Architecture
 
-- **One inference path.** The CLI and Gradio call `murmell.Detector`. It owns resizing, normalization,
-  checkpoint construction, thresholding and mask alignment. ONNX wraps that same model before thresholding.
-- **Full checkpoints.** Both state dictionaries are packed with the wheel for offline inference as exact float32
-  weights and load on CPU with `weights_only=True`.
-- **Default selection.** Round-1 seed 0 at 0.900 beats the historical demo on held-out mIoU. The old demo has higher
-  foreground IoU; retain its card for comparison. The two new recipes do not justify a default switch.
-- **Evaluation isolation.** Each seed trains on the hard generator. Validation selects the threshold. The held-out
-  generator uses separate seed, photos, fonts, opacity and layouts. Neither test split selects model thresholds.
-- **Rebuild scopes.** `make bench` retrains the seven recipes. `make shipped` scores bundled checkpoints and measures
-  CPU export. `make showcase` rebuilds the synthetic reports and app recording without retraining task 1.
-  The historical competition tools do not run as part of these commands.
+- **Public corpus.** Official embedders watermark images from a four-photo licensed corpus. Edits carry a
+  pixel-support mask through crop and resize; support is pooled to 128 by 128 cells. The held-out generator
+  changes the source photos and edit ranges. The scoring code is the competition metric.
+- **Known-message benchmark.** The global soft agreement with the true message gates full-frame and local
+  localisation. A TrustMark-initialised ResNet-50 U-Net predicts cell probabilities. Local proposals use
+  at most 24 decoded crops; MobileSAM supplies optional snap candidates. No test labels fit thresholds.
+- **Unknown-message product.** The global decoder checks the BCH message and a confidence threshold.
+  Failed decoding produces an empty mask and an abstention. On success, the U-Net consumes resized RGB
+  and any enabled local box search scores the recovered message. The packaged inference has no MobileSAM dependency.
+  If the official TrustMark decoder crops to a central view, the product localises only within that view and
+  projects the mask onto the original cell grid.
+- **Export.** The ONNX graph takes float32 RGB in NCHW layout in `[0, 1]` and returns cell probabilities.
+  Global decoding, thresholding and local box search remain outside the graph.
+- **Scope.** Competition training assets are not needed by the public corpus, benchmark or product.
+  The distinct visible-watermark implementation is preserved under `experiments/visible/`.

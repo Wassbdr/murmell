@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
 
-from src.hard_watermarks import HARD, HELD_OUT, Scene, make_scene
+from .hard_watermarks import HARD, HELD_OUT, Scene, make_scene
 
 
 def label_stats(scenes: list[Scene]) -> tuple[int, int, float, float, float, float]:
@@ -55,7 +55,7 @@ def write_grid(splits: dict[str, list[Scene]], path: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[2] / "benchmarks")
+    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "results")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     splits = {name: [make_scene(seed, i, config=config) for i in range(192)]
@@ -63,7 +63,7 @@ def main() -> None:
     write_grid(splits, args.output / "data-grid.png")
     lines = [
         "# Synthetic dataset audit", "",
-        "Regenerate with `make bench-audit`. Test seeds 12302 and 12303; 192 images per split.",
+        "Regenerate with `make visible-audit`. Test seeds 12302 and 12303; 192 images per split.",
         "Each image has its exact binary target below it. The grid selects the median opacity in each illustrated slice.",
         "", "![Hard and held-out examples and targets](data-grid.png)", "",
         "| Split | Slice | Marked scenes | Nonempty labels | Median mask area | P10 mask area | "

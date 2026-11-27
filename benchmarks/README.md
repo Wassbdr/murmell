@@ -1,61 +1,55 @@
-# Visible-watermark benchmark
+# Public invisible-watermark benchmark
+
+Install the [pinned CPU environment](requirements.txt) with Python 3.10 or 3.11:
 
 ```sh
-python -m pip install -r benchmarks/requirements.txt -e .
+python -m pip install -r benchmarks/requirements.txt -e '.[onnx]'
 make bench
 ```
 
-The benchmark trains on CPU from randomly initialized weights, writes [results.md](results.md), and saves the
-per-seed results and weights in `task1_watermark_localisation/work/bench`. To change the run size, pass arguments
-with `make bench BENCH_ARGS="--help"`. The dependency pins target Linux, Python 3.10 or 3.11.
-The full run uses the available CPU threads and trains three seeds. For an exploratory run of just the plain
-U-Net, use `make bench BENCH_ARGS="--models unet --seeds 0 --output work/unet-results.md"`.
-
-Run `make bench-audit` to regenerate the [label counts and signal statistics](data-audit.md) and the sample
-grid. Foreground IoU in the score tables averages only images with a nonempty target; predicting all background
-gets zero on this metric regardless of how many clean images are in the split.
-
-Both Murmell experiments export ONNX models during the benchmark. To export an existing checkpoint:
+The second command is the seed-0 ImageNet learnability gate. It caches the fixed corpus under
+`task1_watermark_localisation/work/round3/trustmark-bench/`. The following commands train the remaining
+TrustMark models and score post-processing from the Task 1 directory. Use the MobileSAM source and
+checkpoint listed in [the source notes](invisible-sources.md).
 
 ```sh
 cd task1_watermark_localisation
-python -m src.export_onnx work/bench/contrast-0.pt work/bench/contrast-0.onnx
+work=work/round3/trustmark-bench
+python -m src.invisible_compare --work "$work" --sliding
+for seed in 0 1 2; do
+  if [ "$seed" != 0 ]; then
+    python -m src.invisible_bench --work "$work" --initialize imagenet --seed "$seed"
+  fi
+  python -m src.invisible_bench --work "$work" --initialize decoder --seed "$seed"
+  PYTHONPATH=/path/to/MobileSAM python -m src.invisible_compare --work "$work" \
+    --sam /path/to/MobileSAM/weights/mobile_sam.pt --maps "$work/trustmark-decoder-128-$seed-1600.npz"
+done
 ```
 
-Add `--residual` for a residual-supervision checkpoint. The graph accepts float32 RGB in `[0, 1]`, arranged
-as NCHW at the training resolution, and outputs a probability per pixel. The validation threshold for each
-checkpoint is in `work/bench/runs.json`. The benchmark compares the exported mask and probability to PyTorch.
+Sliding-window decode scores are cached per scene. Each of the four window scales broadcasts window bit
+accuracy to covered cells, retaining the maximum where windows overlap. MobileSAM is optional for training
+and for the product. The known-message benchmark scores it as a separate post-processing stage.
 
-## Data
+For WAM and PixelSeal, install each official source checkout's inference dependencies and put its root and
+the absolute Task 1 directory on `PYTHONPATH`. Run from the respective source checkout so its checkpoint
+configuration paths resolve. Download only the MIT checkpoints listed in the [source notes](invisible-sources.md).
+Install the additional versions in [meta-requirements.txt](meta-requirements.txt) for the optional Meta runs.
 
-No competition data, CLWD or LVW are used. The [WDNet repository](https://github.com/MRUIL/WDNet)
-links to the CLWD archive without dataset reuse or redistribution terms. The [SLBR repository](https://github.com/bcmi/SLBR-Visible-Watermark-Removal)
-directs users to contact the LVW authors; a download listing alone does not specify a licence.
+```sh
+python -m src.invisible_meta_bench wam /path/to/wam_mit.pth --work /path/to/work/round3/wam-bench \
+  --trustmark-checkpoint /path/to/work/round3/trustmark-bench/trustmark-decoder-128-0-1600.pt
+python -m src.invisible_meta_bench pixelseal /path/to/pixelseal.pth --work /path/to/work/round3/pixelseal-bench
+```
 
-The hard generator overlays procedural logos, tiled text and thinned single-instance text on seeded scenes.
-It mixes procedural backgrounds and photo crops, and includes clean images, opaque text distractors and JPEG
-compression. Masks are defined by pre-opacity coverage of at least 50%. The hard test has its own seeds.
-The held-out test uses disjoint photos, watermark text fonts, opacity ranges and layouts: larger angles, staggered
-tiling and centered single marks in one of three horizontal bands. Logo primitives and ink colors are shared.
+For the product on the same CPU, run `make weights` from the repository root. Measure warmed batch-1
+ONNX and PyTorch inference from the Task 1 directory, then render the result tables from the repository root:
 
-Background photos ship with [scikit-image](https://scikit-image.org/docs/stable/api/skimage.data.html):
-grass (CC0, DeviantArt); Hubble eXtreme Deep Field (NASA, public domain); gravel and brick (CC0, CC0Textures).
-The hard splits use grass and Hubble, and the held-out split uses gravel and brick. There are only four source
-photos, so these results do not establish accuracy on arbitrary photographs. Text uses Matplotlib's bundled
-DejaVu fonts under the Bitstream Vera / DejaVu licence.
+```sh
+python -m src.invisible_onnx_bench work/round3/trustmark-bench/trustmark-hard-202612-60.npz work/round3/localizer.onnx
+cd ..
+python benchmarks/report_invisible.py task1_watermark_localisation/work/round3 \
+  --timing task1_watermark_localisation/work/round3/localizer.json
+```
 
-## References
-
-| Row | What was run |
-|---|---|
-| Plain RGB U-Net | A three-downsample U-Net with bilinear decoding and skip connections. |
-| Murmell round 1 | The repository's MobileNetV2 U-Net with RGB and 5-pixel high-pass channels. Resized for this benchmark and retrained without ImageNet weights. |
-| [SLBR](https://arxiv.org/abs/2108.03581)-style | Small self-calibrated mask head: supervised intermediate masks at three scales and mask-conditioned feature refinement. |
-| [WDNet](https://arxiv.org/abs/2012.07616)-style | Small decomposition head: predicts a mask, alpha and ink, inverts the compositing equation and refines the coarse mask using the estimated background. |
-| [Split then Refine](https://arxiv.org/abs/2012.07007)-style | Small two-stage mask head: channel attention splits coarse mask and background heads; a second U-Net refines the mask from the first stage's outputs. |
-
-The three paper-inspired rows are independent CPU implementations of localization ideas, not scores from the
-authors' checkpoints or replications of their full removal systems. The official repositories do not state
-clear reuse terms for the code and checkpoints we would need. Removal branches, adversarial and perceptual losses,
-and published removal scores are not compared. The reference rows share the same images, update budget and
-segmentation loss; the paper-inspired rows also supervise their intermediate outputs.
+Run CPU comparisons serially. See [the results](results.md) and the [model card](../docs/model_card.md)
+for the distinction between known-message metrics and unknown-message product abstention.

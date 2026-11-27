@@ -53,5 +53,5 @@
  },
  "hardware": "CPU, 8 threads",
  "train_seconds": 1850,
- "rebuild": "python -m src.train_synth --steps 1800 --bs 16 --lr 0.002 --seed 0 --n_eval 500 --eval_seed 1 --n_cal 200 --cal_seed 2 --workers 3 --threads 0 --name wm_unet_synth --weights imagenet"
+ "rebuild": "PYTHONPATH=task1_watermark_localisation python -m experiments.visible.src.train_synth --steps 1800 --bs 16 --lr 0.002 --seed 0 --n_eval 500 --eval_seed 1 --n_cal 200 --cal_seed 2 --workers 3 --threads 0 --name wm_unet_synth --weights imagenet"
 }

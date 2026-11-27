@@ -18,12 +18,12 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from src.data import ROOT
 from src.eval_cv import evaluate
 from src.metric import miou_batch
-from src.synth_visible import make_item, make_set
+from .synth_visible import make_item, make_set
 from src.train_full import Net, loss_fn
 
+ROOT = Path(__file__).resolve().parents[1]
 KINDS_EVAL = ("text", "logo", "tiled", "clean")
 CFG = dict(encoder="mobilenet_v2", size=256, cells=128, decoder_channels=[128, 64, 32, 16, 16])
 
@@ -130,7 +130,7 @@ def main():
                 metrics={k: results[k] for k in ("miou_nested_per_kind", "fold_miou", "miou_nested_single_thr",
                                                  "miou_at_cal_thr", "per_kind", "miou_by_opacity", "baseline_all_zeros")},
                 hardware=f"CPU, {torch.get_num_threads()} threads", train_seconds=results["train_seconds"],
-                rebuild="python -m src.train_synth " + " ".join(f"--{k} {v}" for k, v in vars(a).items()))
+                rebuild="python -m experiments.visible.src.train_synth " + " ".join(f"--{k} {v}" for k, v in vars(a).items()))
     (wdir / f"{a.name}.json").write_text(json.dumps(card, indent=1))
     print(json.dumps({k: card["metrics"][k] for k in ("miou_nested_per_kind", "fold_miou", "miou_at_cal_thr")}, indent=1))
     print(f"weights {wpath} ({wpath.stat().st_size / 2**20:.1f} MB) sha256 {card['sha256'][:16]}… train {train_s:.0f}s")

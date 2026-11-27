@@ -3,7 +3,7 @@ import pytest
 
 from src.eval_cv import evaluate
 from src.metric import miou_batch, miou_image, score
-from src.synth_visible import make_item, make_set, to_cells
+from experiments.visible.src.synth_visible import make_item, make_set, to_cells
 
 
 def test_metric_perfect_inverted_empty():
@@ -42,8 +42,8 @@ def test_nested_cv_on_synthetic():
 
 def test_predict_shapes_random_init():
     torch = pytest.importorskip("torch")
-    from predict import overlay, predict
-    from src.train_synth import CFG, build_net
+    from experiments.visible.predict import overlay, predict
+    from experiments.visible.src.train_synth import CFG, build_net
     net = build_net(CFG, weights=None).eval()
     card = dict(config=CFG, threshold=0.5)
     img = np.random.default_rng(0).integers(0, 255, (100, 140, 3), dtype=np.uint8)

@@ -16,7 +16,7 @@ DEFAULT = ROOT / "weights" / "wm_unet_synth.json"
 
 
 def load(card_path=DEFAULT):
-    from src.train_synth import build_net
+    from .src.train_synth import build_net
     card = json.loads(Path(card_path).read_text())
     net = build_net(card["config"], weights=None)
     sd = torch.load(Path(card_path).parent / card["file"], map_location="cpu", weights_only=True)
